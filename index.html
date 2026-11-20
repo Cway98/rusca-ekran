@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Rusça Ekran">
+<title>Rusça Ekran</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1115;--card:#181b22;--card2:#1f232c;--line:#2a2f3a;--txt:#eef0f4;--mut:#9aa1ad;--acc:#e8473c;--ok:#2fbf71;--bad:#e5484d;--blue:#4c8dff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,sans-serif}
+body{padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 20px)}
+.wrap{max-width:520px;margin:0 auto}
+h1{font-size:22px;margin:4px 0 2px;letter-spacing:-.3px}
+h1 span{color:var(--acc)}
+.sub{color:var(--mut);font-size:14px;margin-bottom:18px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}
+.stat b{display:block;font-size:20px}
+.stat small{color:var(--mut);font-size:12px}
+.lbl{font-size:13px;color:var(--mut);margin:14px 0 8px;text-transform:uppercase;letter-spacing:.6px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--txt);padding:9px 13px;border-radius:999px;font-size:14px;font-family:inherit;cursor:pointer}
+.chip.on{background:var(--acc);border-color:var(--acc)}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:16px;font-size:17px;font-weight:600;font-family:inherit;cursor:pointer;margin-top:12px}
+.btn.main{background:var(--acc);color:#fff}
+.btn.sec{background:var(--card2);color:var(--txt);border:1px solid var(--line)}
+.btn:disabled{opacity:.4}
+.warn{background:#3a2a12;border:1px solid #6b4b16;color:#ffd38a;border-radius:12px;padding:10px 12px;font-size:13px;margin-top:10px;line-height:1.45}
+.hide{display:none!important}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:14px;color:var(--mut)}
+.x{background:none;border:0;color:var(--mut);font-size:15px;font-family:inherit;cursor:pointer;padding:6px 0}
+.prog{height:4px;background:var(--line);border-radius:4px;overflow:hidden;margin-bottom:14px}
+.prog i{display:block;height:100%;background:var(--acc);width:0;transition:width .3s}
+.toggle{display:flex;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px}
+.toggle button{flex:1;border:0;background:none;color:var(--mut);padding:10px;border-radius:9px;font-family:inherit;font-size:14px;cursor:pointer}
+.toggle button.on{background:var(--card2);color:var(--txt);font-weight:600}
+select{width:100%;background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:15px;font-family:inherit}
+.vrow{display:flex;gap:8px;margin-top:8px}
+.vrow .btn{margin-top:0;padding:12px;font-size:15px}
+
+/* ---------- SAHNE ---------- */
+.screen{position:relative;border-radius:20px;overflow:hidden;aspect-ratio:16/10;border:1px solid var(--line);cursor:pointer;background:#111}
+.screen svg.bg{position:absolute;inset:0;width:100%;height:100%}
+.cat{position:absolute;top:10px;left:12px;font-size:11px;color:#fff;background:#0008;padding:4px 9px;border-radius:999px;z-index:3}
+.props{position:absolute;top:8px;right:10px;display:flex;gap:6px;z-index:3}
+.props span{font-size:30px;display:inline-block;animation:pop .5s cubic-bezier(.3,1.6,.5,1) both,bob 2.4s ease-in-out .6s infinite;filter:drop-shadow(0 2px 4px #0008)}
+.props span:nth-child(2){animation-delay:.15s,.9s}.props span:nth-child(3){animation-delay:.3s,1.2s}
+@keyframes pop{from{transform:scale(0) rotate(-20deg)}to{transform:scale(1)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.spk{position:absolute;left:10px;bottom:0;width:30%;max-width:130px;z-index:2}
+.spk .mouth{transform-box:fill-box;transform-origin:center;transform:scaleY(.25);transition:transform .1s}
+.playing .spk .mouth{animation:talk .22s ease-in-out infinite alternate}
+@keyframes talk{from{transform:scaleY(.2)}to{transform:scaleY(1)}}
+.spk .eyes{transform-box:fill-box;transform-origin:center;animation:blink 4s infinite}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+.playing .spk .body{animation:breathe 1.2s ease-in-out infinite}
+@keyframes breathe{50%{transform:translateY(-1.5px)}}
+.subt{position:absolute;left:0;right:0;bottom:10px;z-index:4;text-align:center;padding:0 10px 0 32%}
+.subt div{display:inline-block;background:#000b;border-radius:10px;padding:6px 10px;font-size:14px;font-weight:600;line-height:1.3}
+.subt .w{color:#bbb;transition:color .1s}
+.subt .w.on{color:#ffd84d}
+.subt .w.done{color:#fff}
+.tap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:5;background:#0007;font-size:15px;font-weight:600}
+.tap b{background:var(--acc);padding:12px 18px;border-radius:999px}
+
+/* sahne animasyonları */
+.a-snow circle{animation:snow linear infinite}
+@keyframes snow{from{transform:translateY(-20px)}to{transform:translateY(220px)}}
+.a-train{animation:train 2.2s cubic-bezier(.2,.8,.3,1) both}
+@keyframes train{from{transform:translateX(340px)}to{transform:translateX(0)}}
+.a-doorL{animation:doorL 1s 2.3s ease-in-out both}.a-doorR{animation:doorR 1s 2.3s ease-in-out both}
+@keyframes doorL{to{transform:translateX(-9px)}}@keyframes doorR{to{transform:translateX(9px)}}
+.a-light{animation:flick 3s infinite}
+@keyframes flick{0%,100%{opacity:.9}50%{opacity:.6}}
+.a-steam path{animation:steam 2.2s ease-in-out infinite;opacity:0}
+.a-steam path:nth-child(2){animation-delay:.7s}.a-steam path:nth-child(3){animation-delay:1.4s}
+@keyframes steam{0%{opacity:0;transform:translateY(6px)}40%{opacity:.8}100%{opacity:0;transform:translateY(-14px)}}
+.a-jib{transform-box:view-box;transform-origin:212px 36px;animation:jib 6s ease-in-out infinite}
+@keyframes jib{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(5deg)}}
+.a-hook{animation:hook 6s ease-in-out infinite}
+@keyframes hook{0%,100%{transform:translateY(0)}50%{transform:translateY(22px)}}
+.a-drum{transform-box:fill-box;transform-origin:center;animation:spin 3s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.a-stamp{animation:stamp 2.4s ease-in infinite}
+@keyframes stamp{0%,60%,100%{transform:translateY(0)}75%{transform:translateY(22px)}}
+.a-ink{animation:ink 2.4s infinite;opacity:0}
+@keyframes ink{0%,74%{opacity:0}76%,100%{opacity:.85}}
+.a-pen{animation:pen 1.6s ease-in-out infinite}
+@keyframes pen{0%,100%{transform:translate(0,0)}25%{transform:translate(8px,2px)}50%{transform:translate(16px,-1px)}75%{transform:translate(8px,1px)}}
+.a-bubble{transform-box:fill-box;transform-origin:bottom left;animation:bub 2.5s ease-in-out infinite}
+.a-bubble.b2{animation-delay:1.25s}
+@keyframes bub{0%,100%{transform:scale(0);opacity:0}15%,45%{transform:scale(1);opacity:1}55%{transform:scale(0);opacity:0}}
+.a-line{stroke-dasharray:200;stroke-dashoffset:200;animation:draw 2.5s .3s ease-out forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.a-car{animation:car 7s linear infinite}
+@keyframes car{from{transform:translateX(-60px)}to{transform:translateX(360px)}}
+.a-win rect{animation:win 5s infinite}
+.a-win rect:nth-child(3n){animation-delay:1.5s}.a-win rect:nth-child(4n){animation-delay:3s}
+@keyframes win{0%,100%{opacity:.9}50%{opacity:.35}}
+
+.a-tail{transform-box:fill-box;transform-origin:bottom right;animation:tail 1.2s ease-in-out infinite alternate}
+@keyframes tail{from{transform:rotate(-12deg)}to{transform:rotate(14deg)}}
+.a-ha text{animation:ha 1.8s ease-out infinite;opacity:0}.a-ha text:nth-child(2){animation-delay:.3s}.a-ha text:nth-child(3){animation-delay:.6s}
+@keyframes ha{0%{opacity:0;transform:translateY(8px)}30%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}
+.a-leaf ellipse{animation:leaf 6s linear infinite}
+@keyframes leaf{from{transform:translate(0,-10px) rotate(0)}to{transform:translate(-40px,210px) rotate(540deg)}}
+.timer{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin:14px 0}
+.timer i{display:block;height:100%;background:var(--blue);width:100%}
+.opt{display:block;width:100%;text-align:left;background:var(--card);border:2px solid var(--line);color:var(--txt);border-radius:14px;padding:16px;font-size:16px;font-family:inherit;margin-bottom:10px;cursor:pointer;line-height:1.35}
+.opt.ok{border-color:var(--ok);background:#12301f}
+.opt.bad{border-color:var(--bad);background:#3a1416}
+.row{display:flex;gap:8px}
+.row .btn{margin-top:0}
+.fb{font-size:15px;font-weight:600;margin:4px 0 10px;min-height:20px}
+.big{font-size:54px;font-weight:700;text-align:center;margin:20px 0 4px}
+.cen{text-align:center;color:var(--mut)}
+.list{margin-top:16px}
+.li{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:8px}
+.li b{display:block;font-size:15px;margin-bottom:4px}
+.li span{color:var(--mut);font-size:14px}
+.li button{float:right;background:none;border:0;color:var(--acc);font-size:20px;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div id="home">
+  <h1>Rusça <span>Ekran</span></h1>
+  <div class="sub">İzle, dinle, doğru çeviriyi seç.</div>
+  <div class="stats">
+    <div class="stat"><b id="sScore">0</b><small>Toplam puan</small></div>
+    <div class="stat"><b id="sAcc">–</b><small>Doğruluk</small></div>
+    <div class="stat"><b id="sWeak">0</b><small>Tekrar listesi</small></div>
+  </div>
+
+  <div class="lbl">Konu</div>
+  <div class="chips" id="cats"></div>
+
+  <div class="lbl">Mod</div>
+  <div class="toggle" id="modes">
+    <button data-m="listen" class="on">🎧 Altyazısız</button>
+    <button data-m="read">💬 Altyazılı</button>
+  </div>
+
+  <div class="lbl">Seviye</div>
+  <div class="toggle" id="levels">
+    <button data-l="0" class="on">Hepsi</button>
+    <button data-l="1">Kısa</button>
+    <button data-l="2">Orta</button>
+    <button data-l="3">Uzun</button>
+  </div>
+
+  <div class="lbl">Seslendirme</div>
+  <select id="voiceSel"></select>
+  <div class="vrow">
+    <button class="btn sec" id="vTest">▶ Sesi dene</button>
+    <button class="btn sec" id="vSpeed">Hız: Normal</button>
+  </div>
+  <div class="warn" id="voiceTip">En gerçekçi ses için: iPhone <b>Ayarlar › Erişilebilirlik › Seslendirilen İçerik › Sesler › Rusça</b> bölümünden <b>Milena (Gelişmiş)</b> ve varsa <b>Yuri (Gelişmiş)</b> seslerini indir, sonra bu sayfayı kapatıp yeniden aç. İki ses indirirsen kadın ve erkek konuşmacılar ayrı seslerle konuşur.</div>
+
+  <button class="btn main" id="start">Başla · 10 sahne</button>
+  <button class="btn sec" id="startWeak">Hatalılarımı çalış</button>
+  <a class="btn sec" href="youtube.html" style="text-align:center;text-decoration:none;color:var(--txt)">📺 YouTube sahneleri</a>
+</div>
+
+<div id="play" class="hide">
+  <div class="top"><button class="x" id="quit">✕ Çık</button><span id="count">1/10</span><span id="pts">0 puan</span></div>
+  <div class="prog"><i id="progBar"></i></div>
+  <div class="screen" id="screen"></div>
+  <div class="timer"><i id="timeBar"></i></div>
+  <div class="fb" id="fb"></div>
+  <div id="opts"></div>
+  <div class="row hide" id="after">
+    <button class="btn sec" id="again">🔁 Tekrar</button>
+    <button class="btn sec" id="slow">🐢 Yavaş</button>
+    <button class="btn main" id="next">Devam →</button>
+  </div>
+</div>
+
+<div id="result" class="hide">
+  <div class="big" id="rScore">0/10</div>
+  <div class="cen" id="rTxt"></div>
+  <div class="list" id="rList"></div>
+  <button class="btn main" id="restart">Yeni tur</button>
+  <button class="btn sec" id="home2">Ana ekran</button>
+</div>
+
+</div>
+<script>
+const CATS={sohbet:"Sohbet & akıcılık",komedi:"Komedi",gunluk:"Günlük hayat",ulasim:"Metro & ulaşım",market:"Market & kafe",santiye:"Şantiye",evrak:"Evrak & ofis",toplanti:"Toplantı"};
+const D=[
+["gunluk","Доброе утро! Как дела?","Günaydın! Nasılsın?","İyi akşamlar! Nereye gidiyorsun?","☀️👋"],
+["gunluk","Я не понимаю, говорите, пожалуйста, медленнее.","Anlamıyorum, lütfen daha yavaş konuşun.","Anlıyorum, lütfen daha hızlı konuşun.","🤷‍♂️🐢"],
+["gunluk","Сколько это стоит?","Bu ne kadar?","Bu ne zaman açılıyor?","💰🏷️"],
+["gunluk","Я живу в Москве уже год.","Bir yıldır Moskova'da yaşıyorum.","Gelecek yıl Moskova'ya taşınacağım.","🏙️📅"],
+["gunluk","Сегодня очень холодно, возьми шапку.","Bugün çok soğuk, bere al.","Bugün çok sıcak, şapkanı çıkar.","🥶🧢"],
+["gunluk","Давай встретимся в субботу вечером.","Cumartesi akşamı buluşalım.","Pazar sabahı arayalım.","📅🌙"],
+["gunluk","Извините, я опоздал.","Pardon, geç kaldım.","Pardon, erken geldim.","⏰🏃"],
+["gunluk","Можно вас спросить?","Size bir şey sorabilir miyim?","Size yardım edebilir miyim?","🙋❓"],
+["gunluk","У меня завтра выходной.","Yarın izinliyim.","Yarın çalışıyorum.","🛋️😴"],
+["gunluk","Я ещё плохо говорю по-русски.","Rusçayı henüz kötü konuşuyorum.","Rusçayı çok iyi konuşuyorum.","🗣️📚"],
+["gunluk","Где здесь ближайшая аптека?","En yakın eczane nerede?","En yakın market ne zaman kapanıyor?","💊📍"],
+["gunluk","Повторите, пожалуйста, ещё раз.","Lütfen bir kez daha tekrarlayın.","Lütfen biraz bekleyin.","🔁👂"],
+["ulasim","Следующая станция — Павелецкая.","Sonraki istasyon Paveletskaya.","Son istasyon Paveletskaya.","🚇🪧"],
+["ulasim","Осторожно, двери закрываются.","Dikkat, kapılar kapanıyor.","Dikkat, kapılar açılıyor.","🚪⚠️"],
+["ulasim","Как доехать до Курского вокзала?","Kursk garına nasıl gidebilirim?","Kursk garı ne kadar uzakta?","🚉🧭"],
+["ulasim","Мне нужно сделать пересадку на кольцевую линию.","Halka hattına aktarma yapmam gerekiyor.","Halka hattından inmem gerekiyor.","🔄🚇"],
+["ulasim","Вы выходите на следующей?","Bir sonrakinde iniyor musunuz?","Bir sonrakinde biniyor musunuz?","🚶🚪"],
+["ulasim","Такси будет через пять минут.","Taksi beş dakika içinde gelecek.","Taksi beş dakika önce gitti.","🚕⏱️"],
+["ulasim","Остановите, пожалуйста, здесь.","Lütfen burada durun.","Lütfen düz devam edin.","🚕✋"],
+["ulasim","Поезд опаздывает на двадцать минут.","Tren yirmi dakika rötarlı.","Tren yirmi dakikada bir geliyor.","🚆⏰"],
+["ulasim","Я еду на работу на метро.","İşe metroyla gidiyorum.","İşten otobüsle dönüyorum.","🚇💼"],
+["ulasim","Пробки ужасные, я буду позже.","Trafik berbat, geç kalacağım.","Yol boş, erken geleceğim.","🚗🚗"],
+["ulasim","Где можно пополнить карту «Тройка»?","Troyka kartını nereden yükleyebilirim?","Troyka kartını nereden satın alabilirim?","💳➕"],
+["ulasim","Поверните направо после светофора.","Trafik ışığından sonra sağa dönün.","Trafik ışığından önce sola dönün.","🚦➡️"],
+["market","Мне, пожалуйста, капучино с собой.","Bir kapuçino alayım, paket olsun.","Bir kapuçino alayım, burada içeceğim.","☕🛍️"],
+["market","Пакет нужен?","Poşet ister misiniz?","Fiş ister misiniz?","🛍️❓"],
+["market","Можно оплатить картой?","Kartla ödeyebilir miyim?","Nakit ödeyebilir miyim?","💳✅"],
+["market","Счёт, пожалуйста.","Hesap, lütfen.","Menü, lütfen.","🧾🙏"],
+["market","Это без сахара?","Bu şekersiz mi?","Bu şekerli mi?","🍬🚫"],
+["market","У вас есть свободный столик?","Boş masanız var mı?","Rezervasyonunuz var mı?","🍽️🪑"],
+["market","Дайте, пожалуйста, килограмм яблок.","Bir kilo elma verir misiniz?","Yarım kilo armut verir misiniz?","🍎⚖️"],
+["market","Я буду суп и салат.","Çorba ve salata alacağım.","Çorba ve salata yok mu?","🍲🥗"],
+["market","Сдачи не надо.","Para üstü kalsın.","Para üstünü unuttunuz.","🪙👍"],
+["market","Где находится касса?","Kasa nerede?","Kasa ne zaman açılıyor?","🏪📍"],
+["market","Это блюдо острое?","Bu yemek acı mı?","Bu yemek soğuk mu?","🌶️❓"],
+["market","Доставка займёт около часа.","Teslimat yaklaşık bir saat sürecek.","Teslimat bir saat önce yapıldı.","🛵⏱️"],
+["santiye","Сегодня заливаем перекрытие на пятом этаже.","Bugün beşinci kat döşemesini döküyoruz.","Bugün beşinci kat kolonlarını döküyoruz.","🏗️🪣"],
+["santiye","Бетон приедет в десять утра.","Beton sabah onda gelecek.","Beton akşam onda gelecek.","🚛⏰"],
+["santiye","Сколько рабочих сегодня на объекте?","Bugün şantiyede kaç işçi var?","Bugün şantiyede kaç vinç var?","👷🔢"],
+["santiye","Арматура ещё не проверена.","Donatı henüz kontrol edilmedi.","Donatı kontrol edildi, döküme hazır.","🔩🔍"],
+["santiye","Наденьте каску и жилет.","Baret ve yeleğinizi giyin.","Baret ve eldiveninizi çıkarın.","⛑️🦺"],
+["santiye","Кран сегодня не работает из-за ветра.","Vinç bugün rüzgâr yüzünden çalışmıyor.","Vinç bugün yağmur yüzünden çalışmıyor.","🏗️💨"],
+["santiye","Леса на фасаде нужно поднять выше.","Cephedeki iskele daha yukarı çıkarılmalı.","Cephedeki iskele sökülmeli.","🪜⬆️"],
+["santiye","Кладка стен на седьмом этаже отстаёт от графика.","Yedinci kattaki duvar örgüsü programın gerisinde.","Yedinci kattaki duvar örgüsü programın önünde.","🧱📉"],
+["santiye","Утеплитель привезли не той толщины.","Yalıtım malzemesi yanlış kalınlıkta geldi.","Yalıtım malzemesi eksik adette geldi.","🧶📏"],
+["santiye","Нужно больше людей на фасад.","Cepheye daha fazla adam lazım.","Cepheden adam çekmek lazım.","👷➕"],
+["santiye","Опалубку можно снимать через семь дней.","Kalıp yedi gün sonra sökülebilir.","Kalıp yedi gün önce söküldü.","🪵📅"],
+["santiye","Где лежат чертежи последней ревизии?","Son revizyon çizimleri nerede?","İlk revizyon çizimleri nerede?","📐📄"],
+["evrak","Пришлите, пожалуйста, КС-2 и КС-3 за октябрь.","Lütfen ekim ayının KS-2 ve KS-3'ünü gönderin.","Lütfen kasım ayının KS-2 ve KS-3'ünü gönderin.","📑📤"],
+["evrak","Акт скрытых работ ещё не подписан.","Gizli işler tutanağı henüz imzalanmadı.","Gizli işler tutanağı dün imzalandı.","📋✍️"],
+["evrak","Договор на согласовании у юристов.","Sözleşme hukukçularda onayda.","Sözleşme hukukçular tarafından reddedildi.","📜⚖️"],
+["evrak","В документах есть ошибка, нужно исправить.","Belgelerde hata var, düzeltilmesi gerekiyor.","Belgeler doğru, imzaya gönderilebilir.","📄❌"],
+["evrak","Подпишите, пожалуйста, в ЭДО.","Lütfen EDO'da imzalayın.","Lütfen EDO'dan indirin.","💻✍️"],
+["evrak","Объёмы в акте не совпадают с фактом.","Tutanaktaki metrajlar gerçekleşenle uyuşmuyor.","Tutanaktaki metrajlar gerçekleşenle uyuşuyor.","📊⚠️"],
+["evrak","Исполнительная документация должна быть готова до конца месяца.","Uygulama dokümanları (as-built) ay sonuna kadar hazır olmalı.","Uygulama dokümanları (as-built) ay başına kadar hazır olmalı.","📁📅"],
+["evrak","Когда будет оплата по этому акту?","Bu tutanağın ödemesi ne zaman yapılacak?","Bu tutanak ne zaman imzalanacak?","💸❓"],
+["evrak","Отправьте мне сканы оригиналов.","Bana orijinallerin taramalarını gönderin.","Bana orijinalleri kargoyla gönderin.","🖨️📧"],
+["evrak","Нужна печать и подпись генерального директора.","Genel müdürün kaşesi ve imzası gerekiyor.","Proje müdürünün kaşesi ve imzası gerekiyor.","🔏✍️"],
+["evrak","Дополнительное соглашение ещё не согласовано.","Ek sözleşme henüz onaylanmadı.","Ek sözleşme imzalandı ve onaylandı.","📝⏳"],
+["evrak","Сроки поставки материала сдвинулись на две недели.","Malzeme teslim tarihleri iki hafta kaydı.","Malzeme teslim tarihleri iki hafta öne çekildi.","📦📆"],
+["toplanti","Давайте начнём совещание.","Toplantıya başlayalım.","Toplantıyı bitirelim.","👥▶️"],
+["toplanti","Какой у нас статус по корпусу К2?","K2 binasında durum ne?","K2 binası ne zaman bitecek?","🏢❓"],
+["toplanti","Я пришлю протокол сегодня вечером.","Tutanağı bu akşam göndereceğim.","Tutanağı yarın sabah göndereceğim.","📝🌙"],
+["toplanti","Кто отвечает за этот вопрос?","Bu konudan kim sorumlu?","Bu konuyu kim sordu?","🙋❓"],
+["toplanti","Мы не успеваем к сроку.","Teslim tarihine yetişemiyoruz.","Teslim tarihinden önce bitiriyoruz.","⏳😬"],
+["toplanti","Нужно увеличить количество бригад.","Ekip sayısını artırmak gerekiyor.","Ekip sayısını azaltmak gerekiyor.","👷➕"],
+["toplanti","Подрядчик обещал закончить к пятнице.","Taşeron cumaya kadar bitirmeye söz verdi.","Taşeron cuma günü başlamaya söz verdi.","🤝📅"],
+["toplanti","Согласен, но нужно уточнить объёмы.","Katılıyorum ama metrajları netleştirmek lazım.","Katılmıyorum, metrajlar zaten net.","👍📏"],
+["toplanti","Можете показать это на графике?","Bunu programda gösterebilir misiniz?","Bunu çizimde gösterebilir misiniz?","📈👀"],
+["toplanti","Перенесём встречу на завтра.","Görüşmeyi yarına erteleyelim.","Görüşmeyi bugüne alalım.","📅➡️"],
+["toplanti","Какие у нас риски по срокам?","Süre açısından risklerimiz neler?","Maliyet açısından risklerimiz neler?","⚠️⏳"],
+["toplanti","Это нужно решить до конца недели.","Bunun hafta sonuna kadar çözülmesi gerekiyor.","Bunun ay sonuna kadar çözülmesi gerekiyor.","✅📅"],
+["komedi", "— Ты где? — Я уже выхожу! (А сам ещё в душе.)", "— Neredesin? — Çıkıyorum bile! (Aslında hâlâ duşta.)", "— Neredesin? — Geldim bile! (Aslında hâlâ yolda.)", "🚿😅"],
+["komedi", "Диета? Конечно, с понедельника.", "Diyet mi? Tabii, pazartesiden itibaren.", "Diyet mi? Hayır, bugünden itibaren.", "🍰📅"],
+["komedi", "Я не опоздал, я просто пришёл позже всех.", "Geç kalmadım, sadece herkesten sonra geldim.", "Geç kalmadım, herkesten önce geldim.", "⏰😎"],
+["komedi", "Кот съел мою колбасу и смотрит, будто это я виноват.", "Kedi salamımı yedi ve sanki suçlu benmişim gibi bakıyor.", "Kedi salamımı yemedi ama suçlu gibi bakıyor.", "🐈🌭"],
+["komedi", "«Пять минут, и я готова!» — сказала она час назад.", "\"Beş dakikaya hazırım!\" dedi, bir saat önce.", "\"Bir saate hazırım!\" dedi, beş dakika önce.", "💄⌛"],
+["komedi", "Будильник звонит, а я делаю вид, что меня нет.", "Alarm çalıyor, ben de yokmuşum gibi yapıyorum.", "Alarm çalmadı, ben de uyuyakaldım.", "⏰🙈"],
+["komedi", "Зарплата пришла и сразу ушла.", "Maaş geldi ve hemen gitti.", "Maaş gelmedi ama faturalar geldi.", "💸👋"],
+["komedi", "Я не храплю, я просто громко дышу.", "Horlamıyorum, sadece yüksek sesle nefes alıyorum.", "Horluyorum ama sadece hafta sonları.", "😴🔊"],
+["komedi", "— Мама, я поел! — Чипсы — это не еда.", "— Anne, yemek yedim! — Cips yemek değildir.", "— Anne, yemek yapmadım! — Cips de olur.", "🥔😤"],
+["komedi", "У меня не лишний вес, а запас на зиму.", "Bende fazla kilo yok, kış için stok var.", "Bende fazla kilo var, kışa kadar vereceğim.", "🐻❄️"],
+["komedi", "Работаю из дома: внизу пижама, сверху рубашка.", "Evden çalışıyorum: altta pijama, üstte gömlek.", "Ofisten çalışıyorum: altta takım, üstte tişört.", "💻👔"],
+["komedi", "Такие пробки, что я успел выучить русский.", "Trafik öyle sıkışık ki Rusçayı öğrenmeye vaktim oldu.", "Trafik öyle sıkışık ki Rusça kursuna yetişemedim.", "🚗📚"],
+["komedi", "Москва: сегодня зима, завтра весна, послезавтра снова зима.", "Moskova: bugün kış, yarın bahar, öbür gün yine kış.", "Moskova: bugün bahar, yarın yaz, öbür gün sonbahar.", "❄️🌷"],
+["komedi", "Открываю холодильник каждые десять минут — вдруг там что-то новое.", "Her on dakikada bir buzdolabını açıyorum — belki yeni bir şey vardır.", "On dakikadır buzdolabını açmadım — içinde bir şey yok zaten.", "🧊👀"],
+["komedi", "Начальник сказал: «Работа не волк». Я согласился и ушёл домой.", "Patron \"İş kaçmaz\" dedi. Hak verdim ve eve gittim.", "Patron \"İşe dön\" dedi. İtiraz ettim ve eve gittim.", "🐺🏠"],
+["sohbet", "Слушай, давай сходим куда-нибудь на выходных?", "Baksana, hafta sonu bir yerlere gidelim mi?", "Baksana, hafta sonu evde mi kalalım?", "👋🎉"],
+["sohbet", "Короче, я всё понял.", "Kısacası, her şeyi anladım.", "Kısacası, hiçbir şey anlamadım.", "💡👌"],
+["sohbet", "Без проблем, договорились!", "Sorun değil, anlaştık!", "Sorun var, anlaşamadık!", "🤝✅"],
+["sohbet", "Да ладно! Не может быть!", "Hadi ya! Olamaz!", "Tamam o zaman! Olur!", "😲❗"],
+["sohbet", "Как прошли выходные?", "Hafta sonun nasıl geçti?", "Hafta sonu ne yapacaksın?", "🗓️🙂"],
+["sohbet", "Ничего страшного, бывает.", "Önemli değil, olur böyle şeyler.", "Çok kötü, bir daha olmasın.", "🤷😌"],
+["sohbet", "Я так устал, что сил нет.", "O kadar yoruldum ki hâlim kalmadı.", "O kadar dinlendim ki enerjim tavan.", "😩🔋"],
+["sohbet", "Мне всё равно, выбирай ты.", "Bana fark etmez, sen seç.", "Bana sor, ben seçeyim.", "🤷👉"],
+["sohbet", "Ты серьёзно? Я думал, ты шутишь.", "Ciddi misin? Şaka yapıyorsun sandım.", "Şaka mı yapıyorsun? Ciddisin sandım.", "🤨😂"],
+["sohbet", "Давно не виделись! Как ты?", "Görüşmeyeli uzun zaman oldu! Nasılsın?", "Daha dün görüştük! Nasılsın?", "🤗⏳"],
+["sohbet", "Не переживай, всё будет хорошо.", "Merak etme, her şey yoluna girecek.", "Merak etme, her şey bitti.", "🫶🌤️"],
+["sohbet", "Я бы с удовольствием, но сегодня не могу.", "Seve seve gelirdim ama bugün olmaz.", "Hiç gelmem, bugün de olmaz.", "🙏📅"],
+["sohbet", "Подожди секунду, я перезвоню.", "Bir saniye bekle, seni geri arayacağım.", "Bir saniye bekle, sesin gelmiyor.", "📱⏱️"],
+["sohbet", "Что нового? Рассказывай!", "Ne var ne yok? Anlat bakalım!", "Yeni bir şey yok, anlatacak bir şey yok.", "🗣️✨"],
+["sohbet", "Ну, как тебе Москва? Нравится?", "Eee, Moskova nasıl? Beğendin mi?", "Eee, Moskova'dan ne zaman dönüyorsun?", "🏙️😍"]
+].map((r,i)=>{const w=r[1].split(/\s+/).length;return{id:i,cat:r[0],ru:r[1],tr:r[2],wr:r[3],em:r[4],lvl:w<=3?1:w<=6?2:3,fem:i%2===0}});
+
+function splitEmoji(s){try{return [...new Intl.Segmenter().segment(s)].map(x=>x.segment)}catch(e){return Array.from(s)}}
+
+/* ---------- SAHNELER (SVG, 320x200) ---------- */
+function snow(n){let s='<g class="a-snow" fill="#fff">';for(let i=0;i<n;i++){const x=(i*37)%320,r=1+(i%3)*.6,d=4+(i%5),dl=-(i*.7);s+=`<circle cx="${x}" cy="0" r="${r}" opacity=".8" style="animation-duration:${d}s;animation-delay:${dl}s"/>`}return s+'</g>'}
+const SCENES={
+komedi:()=>`<rect width="320" height="200" fill="#4a3b5c"/><rect width="320" height="200" fill="url(#wp)" opacity=".15"/>
+<defs><pattern id="wp" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="2" fill="#fff"/></pattern></defs>
+<rect x="208" y="20" width="84" height="64" fill="#1c2a44" stroke="#e9dcc4" stroke-width="5"/><line x1="250" y1="20" x2="250" y2="84" stroke="#e9dcc4" stroke-width="3"/>
+<g clip-path="url(#wc)">${snow(10).replace('<g class="a-snow"','<g class="a-snow" transform="translate(0 0)"')}</g><clipPath id="wc"><rect x="208" y="20" width="84" height="64"/></clipPath>
+<rect y="150" width="320" height="50" fill="#7a5a44"/>
+<g><rect x="120" y="108" width="170" height="44" rx="12" fill="#c0583e"/><rect x="112" y="98" width="20" height="54" rx="8" fill="#a8472f"/><rect x="278" y="98" width="20" height="54" rx="8" fill="#a8472f"/><rect x="132" y="96" width="146" height="20" rx="8" fill="#d06a4e"/></g>
+<g class="a-cat"><ellipse cx="200" cy="100" rx="22" ry="12" fill="#f0a24a"/><circle cx="220" cy="90" r="10" fill="#f0a24a"/><path d="M213 82 l2 -9 l5 7Z M222 81 l5 -8 l2 9Z" fill="#f0a24a"/><g fill="#222"><circle cx="217" cy="89" r="1.5"/><circle cx="224" cy="89" r="1.5"/></g>
+<path class="a-tail" d="M178 100 q-16 -4 -12 -22" stroke="#f0a24a" stroke-width="5" fill="none" stroke-linecap="round"/></g>
+<g class="a-ha" font-family="Inter" font-weight="800" fill="#ffd84d"><text x="150" y="60" font-size="16">ХА</text><text x="180" y="42" font-size="12">ха</text><text x="160" y="28" font-size="10">ха!</text></g>`,
+sohbet:()=>`<defs><linearGradient id="sk3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4b07a"/><stop offset="1" stop-color="#f7dcb4"/></linearGradient></defs>
+<rect width="320" height="200" fill="url(#sk3)"/><circle cx="250" cy="60" r="22" fill="#fff1cf" opacity=".8"/>
+<g fill="#5a7a4a"><circle cx="190" cy="80" r="30"/><circle cx="215" cy="70" r="26"/><circle cx="290" cy="86" r="30"/></g><rect x="200" y="96" width="8" height="70" fill="#5a3f2a"/><rect x="286" y="104" width="8" height="62" fill="#5a3f2a"/>
+<rect x="150" y="60" width="4" height="100" fill="#333"/><circle cx="152" cy="58" r="7" fill="#ffe7a0" class="a-light"/>
+<rect y="160" width="320" height="40" fill="#b8a07a"/>
+<g fill="#6a4a30"><rect x="210" y="132" width="90" height="6" rx="2"/><rect x="210" y="142" width="90" height="6" rx="2"/><rect x="216" y="148" width="5" height="16"/><rect x="290" y="148" width="5" height="16"/></g>
+<g class="a-leaf" fill="#d98a2a"><ellipse cx="180" cy="0" rx="4" ry="2"/><ellipse cx="240" cy="0" rx="4" ry="2" style="animation-delay:-2s"/><ellipse cx="280" cy="0" rx="4" ry="2" style="animation-delay:-4s"/><ellipse cx="120" cy="0" rx="4" ry="2" style="animation-delay:-1s"/></g>
+<g class="a-bubble"><rect x="236" y="96" width="40" height="18" rx="8" fill="#fff"/><path d="M244 114 l-4 6 l10 -6Z" fill="#fff"/><text x="256" y="109" font-size="9" font-family="Inter" text-anchor="middle" fill="#555">ну?</text></g>`,
+gunluk:()=>`<defs><linearGradient id="sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b2a4a"/><stop offset="1" stop-color="#3a4f7a"/></linearGradient></defs>
+<rect width="320" height="200" fill="url(#sk)"/><circle cx="270" cy="38" r="14" fill="#f4e9c8" opacity=".9"/>
+<g fill="#22304d"><rect x="0" y="95" width="40" height="80"/><rect x="38" y="70" width="34" height="105"/><rect x="250" y="80" width="40" height="95"/><rect x="288" y="100" width="32" height="75"/></g>
+<g fill="#2b3b5e"><rect x="120" y="90" width="80" height="85"/><rect x="152" y="60" width="16" height="32"/><path d="M146 62 Q160 30 174 62Z" fill="#c9a34a"/><rect x="96" y="105" width="22" height="70"/><path d="M92 107 Q107 82 122 107Z" fill="#b8443a"/><rect x="202" y="105" width="22" height="70"/><path d="M198 107 Q213 82 228 107Z" fill="#3f8a5a"/></g>
+<g class="a-win" fill="#ffd77a"><rect x="46" y="80" width="6" height="7"/><rect x="58" y="96" width="6" height="7"/><rect x="46" y="112" width="6" height="7"/><rect x="258" y="92" width="6" height="7"/><rect x="272" y="108" width="6" height="7"/><rect x="132" y="104" width="6" height="7"/><rect x="180" y="118" width="6" height="7"/><rect x="8" y="110" width="6" height="7"/></g>
+<rect y="172" width="320" height="28" fill="#e9eef5"/><g class="a-car"><rect x="0" y="160" width="46" height="14" rx="4" fill="#d9534f"/><rect x="8" y="153" width="28" height="10" rx="3" fill="#c0403c"/><circle cx="10" cy="175" r="4" fill="#222"/><circle cx="36" cy="175" r="4" fill="#222"/></g>${snow(26)}`,
+ulasim:()=>`<rect width="320" height="200" fill="#2a2420"/><path d="M0 0 H320 V60 Q160 20 0 60Z" fill="#3a302a"/>
+<g class="a-light" fill="#fff4cf"><ellipse cx="60" cy="40" rx="14" ry="4"/><ellipse cx="160" cy="30" rx="14" ry="4"/><ellipse cx="260" cy="40" rx="14" ry="4"/></g>
+<rect x="0" y="62" width="320" height="10" fill="#b58b4c"/><text x="160" y="70" fill="#2a2420" font-size="8" font-family="Inter" text-anchor="middle" font-weight="700">М  СТАНЦИЯ</text>
+<g class="a-train"><rect x="10" y="78" width="300" height="78" rx="10" fill="#d8dde3"/><rect x="10" y="140" width="300" height="10" fill="#1f5fae"/>
+<g fill="#5a6a7c"><rect x="24" y="88" width="40" height="30" rx="3"/><rect x="256" y="88" width="40" height="30" rx="3"/></g>
+<g><rect class="a-doorL" x="118" y="86" width="20" height="62" fill="#aab3bd"/><rect class="a-doorR" x="138" y="86" width="20" height="62" fill="#aab3bd"/><rect class="a-doorL" x="186" y="86" width="20" height="62" fill="#aab3bd"/><rect class="a-doorR" x="206" y="86" width="20" height="62" fill="#aab3bd"/></g>
+<g fill="#6d7d90"><rect x="122" y="92" width="12" height="22"/><rect x="142" y="92" width="12" height="22"/><rect x="190" y="92" width="12" height="22"/><rect x="210" y="92" width="12" height="22"/></g></g>
+<rect y="156" width="320" height="44" fill="#8a8178"/><rect y="156" width="320" height="4" fill="#e8c547"/>`,
+market:()=>`<rect width="320" height="200" fill="#3b2a22"/><rect x="0" y="0" width="320" height="110" fill="#6b4a36"/>
+<g fill="#4a3226" transform="translate(70 22)"><rect x="20" y="20" width="110" height="64" rx="4"/></g><g fill="#efe3c8" font-family="Inter" font-size="8" transform="translate(70 22)"><text x="30" y="36">КОФЕ ........ 250</text><text x="30" y="50">ЧАЙ .......... 180</text><text x="30" y="64">СУП ......... 390</text><text x="30" y="78">САЛАТ ...... 420</text></g>
+<g fill="#8a6a50" transform="translate(0 0)"><rect x="200" y="22" width="100" height="6"/><rect x="200" y="56" width="100" height="6"/></g>
+<g><circle cx="215" cy="14" r="8" fill="#d6463c"/><circle cx="235" cy="15" r="7" fill="#e3a33a"/><circle cx="252" cy="14" r="8" fill="#7bb04a"/><rect x="268" y="4" width="10" height="18" fill="#3b7dd8"/><rect x="284" y="8" width="12" height="14" fill="#e8e1d1"/>
+<rect x="208" y="38" width="12" height="18" fill="#c8b07a"/><rect x="226" y="40" width="14" height="16" fill="#9b5a3a"/><rect x="246" y="36" width="10" height="20" fill="#3d8a6a"/><rect x="262" y="40" width="16" height="16" fill="#e0cba0"/></g>
+<rect y="110" width="320" height="16" fill="#a77b56"/><rect y="126" width="320" height="74" fill="#5a3d2e"/>
+<g transform="translate(200 82)"><rect x="0" y="6" width="34" height="26" rx="5" fill="#f5f0e6"/><path d="M34 12 q12 0 12 9 q0 9 -12 9" stroke="#f5f0e6" stroke-width="4" fill="none"/><rect x="0" y="6" width="34" height="6" fill="#8b5a3a"/>
+<g class="a-steam" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"><path d="M8 0 q-5 -8 0 -16"/><path d="M17 0 q5 -8 0 -16"/><path d="M26 0 q-5 -8 0 -16"/></g></g>
+<g transform="translate(260 96)"><rect width="34" height="20" rx="3" fill="#2a2a2a"/><rect x="4" y="3" width="26" height="8" fill="#5fd38a"/></g>`,
+santiye:()=>`<defs><linearGradient id="sk2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fb3d9"/><stop offset="1" stop-color="#d5e3ef"/></linearGradient></defs>
+<rect width="320" height="200" fill="url(#sk2)"/>
+<g><rect x="150" y="70" width="110" height="110" fill="#b9b2a7"/>${[0,1,2,3,4].map(i=>`<rect x="150" y="${70+i*22}" width="110" height="4" fill="#8e877c"/>`).join('')}
+${[0,1,2,3,4].map(i=>[0,1,2,3].map(j=>`<rect x="${158+j*26}" y="${78+i*22}" width="16" height="11" fill="#5c6670"/>`).join('')).join('')}
+<g stroke="#e0a23a" stroke-width="1.5">${[0,1,2,3,4,5].map(i=>`<line x1="${148+i*23}" y1="64" x2="${148+i*23}" y2="180"/>`).join('')}${[0,1,2,3,4,5].map(i=>`<line x1="146" y1="${66+i*22}" x2="264" y2="${66+i*22}"/>`).join('')}</g></g>
+<g><rect x="208" y="36" width="8" height="144" fill="#f2b632"/>${[0,1,2,3,4,5,6,7].map(i=>`<line x1="208" y1="${40+i*17}" x2="216" y2="${48+i*17}" stroke="#a87a18" stroke-width="1.5"/>`).join('')}
+<g class="a-jib"><rect x="110" y="30" width="190" height="7" fill="#f2b632"/><rect x="288" y="37" width="14" height="10" fill="#666"/><rect x="204" y="18" width="16" height="12" fill="#f2b632"/>
+<g class="a-hook"><line x1="140" y1="37" x2="140" y2="80" stroke="#333" stroke-width="1.2"/><rect x="128" y="80" width="24" height="10" fill="#7a5a3a"/></g></g></g>
+<rect y="178" width="320" height="22" fill="#8a7a63"/>
+<g transform="translate(20 140)"><rect x="0" y="10" width="40" height="28" fill="#e86a2a"/><rect x="40" y="18" width="20" height="20" fill="#d4d4d4"/><g class="a-drum"><ellipse cx="78" cy="20" rx="22" ry="14" fill="#cfcfcf"/><path d="M60 14 L96 26 M62 26 L94 12" stroke="#999" stroke-width="2"/></g><circle cx="12" cy="40" r="6" fill="#222"/><circle cx="50" cy="40" r="6" fill="#222"/><circle cx="84" cy="40" r="6" fill="#222"/></g>`,
+evrak:()=>`<rect width="320" height="200" fill="#e7e2d8"/><rect x="0" y="0" width="320" height="96" fill="#d3ccbe"/>
+<rect x="210" y="14" width="88" height="62" rx="3" fill="#fff"/><path class="a-line" d="M218 66 L236 54 L252 58 L270 36 L290 30" stroke="#e8473c" stroke-width="2.5" fill="none"/>
+<rect y="120" width="320" height="80" fill="#8b6b4f"/><rect y="116" width="320" height="8" fill="#a5835f"/>
+<g transform="translate(150 86)"><rect x="0" y="10" width="70" height="44" rx="3" fill="#2d2f36"/><rect x="4" y="14" width="62" height="34" fill="#4c8dff"/><rect x="-6" y="54" width="82" height="5" rx="2" fill="#3a3c44"/>
+<g fill="#fff" opacity=".85"><rect x="10" y="20" width="36" height="3"/><rect x="10" y="27" width="46" height="3"/><rect x="10" y="34" width="28" height="3"/></g></g>
+<g transform="translate(236 96)"><rect x="4" y="-4" width="58" height="34" fill="#f2efe8" transform="rotate(-4)"/><rect x="0" y="0" width="58" height="34" fill="#fff"/>
+<g fill="#bbb"><rect x="6" y="6" width="40" height="2"/><rect x="6" y="11" width="44" height="2"/><rect x="6" y="16" width="30" height="2"/></g>
+<circle class="a-ink" cx="40" cy="25" r="8" fill="none" stroke="#2a56c6" stroke-width="2"/>
+<g class="a-stamp"><rect x="34" y="-34" width="12" height="18" fill="#7a4a2a"/><rect x="30" y="-16" width="20" height="6" fill="#333"/></g></g>
+<g transform="translate(98 104)"><rect width="46" height="22" fill="#fff"/><path d="M4 16 q6 -10 10 0 t10 0 t10 -4" stroke="#1d3e8a" stroke-width="1.4" fill="none"/>
+<g class="a-pen"><rect x="18" y="-14" width="4" height="22" fill="#1d3e8a" transform="rotate(25 20 0)"/></g></g>`,
+toplanti:()=>`<rect width="320" height="200" fill="#2a3140"/><rect width="320" height="120" fill="#394357"/>
+<g transform="translate(0 16)"><rect x="18" y="16" width="120" height="74" rx="4" fill="#f4f5f7"/>
+<g fill="#4c8dff"><rect x="30" y="66" width="12" height="16"/><rect x="48" y="56" width="12" height="26"/><rect x="66" y="46" width="12" height="36"/></g><path class="a-line" d="M86 78 L100 64 L112 70 L128 40" stroke="#e8473c" stroke-width="2.5" fill="none"/>
+<text x="28" y="32" font-family="Inter" font-size="9" fill="#333" font-weight="700">График · К2</text></g>
+<g><circle cx="200" cy="96" r="13" fill="#e2b59a"/><rect x="186" y="108" width="28" height="30" rx="10" fill="#3a6db0"/>
+<circle cx="250" cy="92" r="13" fill="#c99577"/><rect x="236" y="104" width="28" height="34" rx="10" fill="#6a4a8a"/>
+<circle cx="296" cy="98" r="13" fill="#f0c8a8"/><rect x="282" y="110" width="28" height="28" rx="10" fill="#4a8a5a"/></g>
+<path d="M150 140 H320 V160 H150Z" fill="#7a5a40"/><rect x="150" y="136" width="170" height="6" fill="#9a7550"/>
+<g class="a-bubble"><rect x="214" y="58" width="34" height="18" rx="8" fill="#fff"/><path d="M220 76 l-4 6 l10 -6Z" fill="#fff"/><g fill="#999"><circle cx="224" cy="67" r="2"/><circle cx="231" cy="67" r="2"/><circle cx="238" cy="67" r="2"/></g></g>
+<g class="a-bubble b2"><rect x="262" y="56" width="34" height="18" rx="8" fill="#fff"/><path d="M268 74 l-4 6 l10 -6Z" fill="#fff"/><g fill="#999"><circle cx="272" cy="65" r="2"/><circle cx="279" cy="65" r="2"/><circle cx="286" cy="65" r="2"/></g></g>
+<rect y="160" width="320" height="40" fill="#232a36"/>`
+};
+// konuşmacı (kadın/erkek, konuya göre kıyafet)
+function speaker(fem,cat){
+  const work=cat==="santiye",office=cat==="evrak"||cat==="toplanti";
+  const fun=cat==="komedi"||cat==="sohbet";const shirt=work?"#f07f1f":office?"#2f3e5c":fun?(fem?"#e3a33a":"#5a8a3a"):fem?"#c2456b":"#3a7a8a";
+  const skin=fem?"#f1c7a5":"#dcae8a",hair=fem?"#5a3020":"#2b211b";
+  const hairShape=fem?`<path d="M22 40 Q20 8 50 8 Q80 8 78 40 L80 78 Q70 70 70 52 L30 52 Q30 70 20 78Z" fill="${hair}"/>`:`<path d="M26 34 Q26 10 50 10 Q74 10 74 34 Q66 22 50 22 Q34 22 26 34Z" fill="${hair}"/>`;
+  const hat=work?`<path d="M24 30 Q24 6 50 6 Q76 6 76 30Z" fill="#ffd21f"/><rect x="20" y="28" width="60" height="5" rx="2" fill="#e8bc0f"/>`:"";
+  const vest=work?`<path d="M30 98 L40 140 M70 98 L60 140" stroke="#d6f23a" stroke-width="5"/>`:"";
+  const tie=office&&!fem?`<path d="M50 96 L46 104 L50 124 L54 104Z" fill="#b8333a"/>`:"";
+  return `<svg class="spk" viewBox="0 0 100 140"><g class="body">
+  <path d="M10 140 Q12 96 50 92 Q88 96 90 140Z" fill="${shirt}"/>${vest}${tie}
+  <rect x="43" y="74" width="14" height="20" fill="${skin}"/>
+  ${fem?hairShape:""}<ellipse cx="50" cy="48" rx="24" ry="28" fill="${skin}"/>${fem?"":hairShape}${hat}
+  <g class="eyes" fill="#222"><ellipse cx="41" cy="46" rx="2.6" ry="3"/><ellipse cx="59" cy="46" rx="2.6" ry="3"/></g>
+  <path d="M37 39 q4 -3 8 0 M55 39 q4 -3 8 0" stroke="${hair}" stroke-width="2" fill="none"/>
+  <ellipse class="mouth" cx="50" cy="63" rx="6" ry="4" fill="#7a2a2a"/></g></svg>`;
+}
+function buildScreen(q){
+  const props=splitEmoji(q.em).map(e=>`<span>${e}</span>`).join("");
+  let words="",pos=0;
+  q.ru.split(/(\s+)/).forEach(t=>{if(/^\s+$/.test(t)){words+=t;pos+=t.length;return}words+=`<span class="w" data-s="${pos}">${t}</span>`;pos+=t.length});
+  return `<svg class="bg" viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice">${SCENES[q.cat]()}</svg>
+  <div class="cat">${CATS[q.cat]}</div><div class="props">${props}</div>${speaker(q.fem,q.cat)}
+  <div class="subt ${mode==="listen"?"hide":""}" id="subt"><div>${words}</div></div>`;
+}
+
+/* ---------- KAYIT ---------- */
+const KEY="ruscaEkran_v1";
+let S={score:0,right:0,total:0,weak:[],voice:"",rate:0.92};
+try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s)S=Object.assign(S,s)}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+
+/* ---------- SES ---------- */
+let ruVoices=[],femV=null,maleV=null;
+const MALE=/yuri|юрий|maxim|максим|pavel|павел|dmitr|дмитрий|male/i;
+function quality(v){return /premium/i.test(v.name+v.voiceURI)?3:/enhanced|gelişmiş|улучш/i.test(v.name+v.voiceURI)?2:v.localService?1:0}
+function loadVoices(){
+  if(!("speechSynthesis" in window))return;
+  ruVoices=speechSynthesis.getVoices().filter(v=>v.lang&&v.lang.toLowerCase().startsWith("ru")).sort((a,b)=>quality(b)-quality(a));
+  const sel=document.getElementById("voiceSel");
+  sel.innerHTML='<option value="">Otomatik (en kaliteli ses)</option>'+ruVoices.map(v=>`<option value="${v.voiceURI}">${v.name}${quality(v)>=2?" ★":""}</option>`).join("");
+  sel.value=S.voice&&ruVoices.some(v=>v.voiceURI===S.voice)?S.voice:"";
+  const m=ruVoices.filter(v=>MALE.test(v.name)),f=ruVoices.filter(v=>!MALE.test(v.name));
+  femV=f[0]||ruVoices[0]||null;maleV=m[0]||null;
+  if(!ruVoices.length&&speechSynthesis.getVoices().length)document.getElementById("voiceTip").innerHTML="⚠️ Bu cihazda hiç Rusça ses yok. "+document.getElementById("voiceTip").innerHTML;
+}
+if("speechSynthesis" in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;setTimeout(loadVoices,700)}
+document.getElementById("voiceSel").onchange=e=>{S.voice=e.target.value;save()};
+const RATES=[[0.8,"Yavaş"],[0.92,"Normal"],[1.05,"Hızlı"]];
+function rateLabel(){const r=RATES.find(x=>Math.abs(x[0]-S.rate)<.01)||RATES[1];document.getElementById("vSpeed").textContent="Hız: "+r[1]}
+rateLabel();
+document.getElementById("vSpeed").onclick=()=>{const i=RATES.findIndex(x=>Math.abs(x[0]-S.rate)<.01);S.rate=RATES[(i+1)%3][0];save();rateLabel()};
+document.getElementById("vTest").onclick=()=>speak({ru:"Привет! Я буду помогать тебе учить русский.",fem:true},1);
+
+function voiceFor(q){
+  if(S.voice){const v=ruVoices.find(v=>v.voiceURI===S.voice);if(v)return v}
+  return (!q.fem&&maleV)?maleV:femV;
+}
+let wordTimer=null;
+function speak(q,mult){
+  const sc=document.getElementById("screen"),sub=document.getElementById("subt");
+  const ws=sub?[...sub.querySelectorAll(".w")]:[];
+  ws.forEach(w=>w.classList.remove("on","done"));
+  clearInterval(wordTimer);
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(q.ru);
+    u.lang="ru-RU";const v=voiceFor(q);if(v)u.voice=v;
+    u.rate=S.rate*(mult||1);
+    // erkek sesi yoksa erkek konuşmacıda sesi biraz kalınlaştır
+    u.pitch=(!q.fem&&!maleV&&!S.voice)?0.8:1;
+    let gotBoundary=false;
+    const mark=ci=>{ws.forEach(w=>{const s=+w.dataset.s;w.classList.toggle("done",s<ci);w.classList.toggle("on",s===ci||(s<=ci&&s+w.textContent.length>ci))})};
+    u.onboundary=e=>{if(e.name&&e.name!=="word")return;gotBoundary=true;mark(e.charIndex)};
+    u.onstart=()=>{sc&&sc.classList.add("playing");
+      // boundary desteklenmezse kelimeleri tahmini sürelerle yak
+      let k=0;const per=Math.max(230,420/(u.rate));
+      wordTimer=setInterval(()=>{if(gotBoundary){clearInterval(wordTimer);return}if(k<ws.length){mark(+ws[k].dataset.s);k++}else clearInterval(wordTimer)},per)};
+    u.onend=u.onerror=()=>{sc&&sc.classList.remove("playing");clearInterval(wordTimer);ws.forEach(w=>{w.classList.remove("on");w.classList.add("done")})};
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ---------- AYARLAR ---------- */
+let cat="all",mode="listen",lvl=0;
+const catsEl=document.getElementById("cats");
+[["all","Hepsi"],...Object.entries(CATS)].forEach(([k,v])=>{
+  const b=document.createElement("button");b.className="chip"+(k==="all"?" on":"");b.textContent=v;
+  b.onclick=()=>{cat=k;[...catsEl.children].forEach(c=>c.classList.remove("on"));b.classList.add("on")};
+  catsEl.appendChild(b);
+});
+function tog(id,attr,set){const el=document.getElementById(id);el.querySelectorAll("button").forEach(b=>b.onclick=()=>{el.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");set(b.dataset[attr])})}
+tog("modes","m",v=>mode=v);tog("levels","l",v=>lvl=+v);
+
+function renderStats(){
+  $("sScore").textContent=S.score;
+  $("sAcc").textContent=S.total?Math.round(S.right/S.total*100)+"%":"–";
+  $("sWeak").textContent=S.weak.length;
+  $("startWeak").disabled=!S.weak.length;
+}
+const $=id=>document.getElementById(id);
+renderStats();
+
+/* ---------- OYUN ---------- */
+let Q=[],qi=0,pts=0,log=[],timer=null,tLeft=0,answered=false;
+const TIME=15;
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function show(id){["home","play","result"].forEach(s=>$(s).classList.toggle("hide",s!==id));window.scrollTo(0,0)}
+function startRound(weakOnly){
+  let pool=weakOnly?D.filter(d=>S.weak.includes(d.id)):D.filter(d=>(cat==="all"||d.cat===cat)&&(!lvl||d.lvl===lvl));
+  if(!pool.length)pool=D.filter(d=>cat==="all"||d.cat===cat);
+  const wf=shuffle(pool.filter(d=>S.weak.includes(d.id))),rest=shuffle(pool.filter(d=>!S.weak.includes(d.id)));
+  Q=(weakOnly?wf:shuffle([...wf.slice(0,3),...rest])).slice(0,10);
+  qi=0;pts=0;log=[];show("play");ask();
+}
+function ask(){
+  answered=false;const q=Q[qi];
+  $("count").textContent=(qi+1)+"/"+Q.length;$("pts").textContent=pts+" puan";
+  $("progBar").style.width=(qi/Q.length*100)+"%";
+  $("screen").innerHTML=buildScreen(q);
+  $("fb").textContent="";$("after").classList.add("hide");
+  const o=$("opts");o.innerHTML="";
+  shuffle([[q.tr,true],[q.wr,false]]).forEach(([t,ok])=>{
+    const b=document.createElement("button");b.className="opt";b.textContent=t;b.dataset.ok=ok;
+    b.onclick=()=>answer(ok,b);o.appendChild(b);
+  });
+  // sahne girişi bitince konuş
+  setTimeout(()=>{if(Q[qi]===q)speak(q)},q.cat==="ulasim"?900:350);
+  tLeft=TIME+1;$("timeBar").style.width="100%";clearInterval(timer);
+  timer=setInterval(()=>{tLeft-=0.1;$("timeBar").style.width=Math.max(0,Math.min(1,tLeft/TIME)*100)+"%";if(tLeft<=0)answer(false,null,true)},100);
+}
+function answer(ok,btn,timeout){
+  if(answered)return;answered=true;clearInterval(timer);
+  const q=Q[qi];
+  document.querySelectorAll(".opt").forEach(b=>{if(b.dataset.ok==="true")b.classList.add("ok");else if(b===btn)b.classList.add("bad")});
+  const st=$("subt");if(st)st.classList.remove("hide");
+  S.total++;
+  if(ok){const p=10+Math.round(Math.max(0,Math.min(TIME,tLeft)));pts+=p;S.score+=p;S.right++;S.weak=S.weak.filter(x=>x!==q.id);$("fb").innerHTML='<span style="color:var(--ok)">✓ Doğru · +'+p+'</span>'}
+  else{if(!S.weak.includes(q.id))S.weak.push(q.id);$("fb").innerHTML='<span style="color:var(--bad)">'+(timeout?"⏱ Süre doldu":"✗ Yanlış")+'</span>'}
+  log.push({q,ok});save();
+  $("pts").textContent=pts+" puan";$("after").classList.remove("hide");
+}
+$("screen").onclick=()=>speak(Q[qi]);
+$("again").onclick=()=>speak(Q[qi]);
+$("slow").onclick=()=>speak(Q[qi],0.7);
+$("next").onclick=()=>{qi++;if(qi<Q.length)ask();else finish()};
+$("quit").onclick=()=>{clearInterval(timer);try{speechSynthesis.cancel()}catch(e){}renderStats();show("home")};
+function finish(){
+  try{speechSynthesis.cancel()}catch(e){}
+  const r=log.filter(l=>l.ok).length;
+  $("rScore").textContent=r+"/"+log.length;
+  $("rTxt").textContent=pts+" puan · "+(r===log.length?"Mükemmel! 🔥":r>=7?"Çok iyi!":"Yanlışlar tekrar listene eklendi.");
+  $("rList").innerHTML="";
+  log.forEach(l=>{const d=document.createElement("div");d.className="li";
+    d.innerHTML='<button aria-label="dinle">🔊</button><b>'+(l.ok?"✓ ":"✗ ")+l.q.ru+'</b><span>'+l.q.tr+'</span>';
+    d.querySelector("button").onclick=()=>speak(l.q);$("rList").appendChild(d)});
+  renderStats();show("result");
+}
+$("start").onclick=()=>{try{speechSynthesis.speak(new SpeechSynthesisUtterance(""))}catch(e){}startRound(false)};
+$("startWeak").onclick=()=>{try{speechSynthesis.speak(new SpeechSynthesisUtterance(""))}catch(e){}startRound(true)};
+$("restart").onclick=()=>startRound(false);
+$("home2").onclick=()=>{renderStats();show("home")};
+</script>
+</body>
+</html>
