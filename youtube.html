@@ -118,7 +118,7 @@ button{font-family:inherit;cursor:pointer;border:0;color:inherit;background:none
   <div class="bar">
     <a href="./" class="icon-btn" style="text-decoration:none" aria-label="Ana sayfa">‹</a>
     <div class="logo">Rusça<b>Ekran</b></div>
-    <div class="pills"><div class="pill">🔥 <span id="hStreak">0</span></div></div>
+    <div class="pills"><div class="pill">🔥 <span id="hStreak">0</span></div><span data-auth-chip></span></div>
   </div>
 
   <!-- ===== BAŞLANGIÇ ===== -->
@@ -137,7 +137,9 @@ button{font-family:inherit;cursor:pointer;border:0;color:inherit;background:none
     <div class="chips" id="cats"></div>
     <div class="sec">Tur uzunluğu</div>
     <div class="chips" id="lens"></div>
-    <button class="cta" id="start">▶ Başla</button>
+    <div style="flex:1"></div>
+    <button class="cta" id="start" style="margin-top:0;margin-bottom:12px">▶ Başla</button>
+    <a href="lig.html" id="leagueCard" style="display:flex;align-items:center;justify-content:space-between;text-decoration:none;color:var(--txt);background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:12px"><span><b style="font-size:15px">🏆 Lig tablosu</b><br><small style="color:var(--mut)" id="leagueTxt">Arkadaşlarınla yarış</small></span><span style="color:var(--mut)">›</span></a>
     <div class="sub-links"><a href="add.html">➕ Kendi sahneni ekle</a><a href="./">Cümle oyunu ›</a></div>
   </section>
 
@@ -169,6 +171,7 @@ button{font-family:inherit;cursor:pointer;border:0;color:inherit;background:none
     <div class="ring"><svg width="150" height="150"><circle cx="75" cy="75" r="64" stroke="#262b38" stroke-width="12" fill="none"/><circle id="ringC" cx="75" cy="75" r="64" stroke="url(#gr)" stroke-width="12" fill="none" stroke-linecap="round" stroke-dasharray="402" stroke-dashoffset="402" style="transition:stroke-dashoffset 1s ease-out"/><defs><linearGradient id="gr"><stop offset="0" stop-color="#ff4d3d"/><stop offset="1" stop-color="#ff7a45"/></linearGradient></defs></svg><b id="rPct">0%</b></div>
     <h3 id="rTitle">Tur bitti</h3>
     <div class="sub" id="rSub"></div>
+    <div id="rAuth"></div>
     <div class="sec">Bu turdaki sahneler</div>
     <div class="rlist" id="rList"></div>
     <button class="cta" id="again" style="margin-top:0">Yeni tur</button>
@@ -177,6 +180,8 @@ button{font-family:inherit;cursor:pointer;border:0;color:inherit;background:none
 </div>
 <div class="float" id="float"></div>
 
+<script src="config.js"></script>
+<script src="auth.js"></script>
 <script src="clips.js"></script>
 <script>
 const $=id=>document.getElementById(id);
@@ -220,7 +225,7 @@ function makePlayer(v,s){
 function onState(e){if(e.data===YT.PlayerState.PLAYING){$("loader").classList.add("hide");unlocked=true;$("tapstart").classList.add("hide")}}
 
 /* ---------- oyun durumu ---------- */
-let Q=[],qi=0,pts=0,streak=0,log=[],phase="idle",tStart=0,tLimit=0,tRAF=0,autoT=0,holding=false;
+let Q=[],qi=0,pts=0,streak=0,roundBest=0,log=[],phase="idle",tStart=0,tLimit=0,tRAF=0,autoT=0,holding=false;
 function pickRound(){
   let pool=ALL();
   if(cat==="series")pool=pool.filter(c=>SERIES.includes(c.v));
@@ -235,7 +240,7 @@ function pickRound(){
 }
 async function start(){
   if(!apiReady){toastFloat("YouTube yükleniyor…","var(--mut)");setTimeout(start,700);return}
-  Q=pickRound();qi=0;pts=0;streak=0;log=[];
+  Q=pickRound();qi=0;pts=0;streak=0;roundBest=0;log=[];
   $("gTot").textContent=Q.length;$("dots").innerHTML=Q.map(()=>"<span></span>").join("");
   show("game");$("loader").classList.remove("hide");
   if(!P)await makePlayer(Q[0].v,Q[0].s);
@@ -290,7 +295,7 @@ function answer(ok,btn,timeout){
   let gain=0;
   if(ok){streak++;U.right++;gain=10+Math.round(10*Math.max(0,1-el/total))+Math.min(10,(streak-1)*2);pts+=gain;U.score+=gain;U.weak=U.weak.filter(x=>x!==id);toastFloat("+"+gain,"var(--ok)");if(navigator.vibrate)navigator.vibrate(15)}
   else{streak=0;if(!U.weak.includes(id))U.weak.push(id);toastFloat(timeout?"⏱":"✗","var(--bad)");if(navigator.vibrate)navigator.vibrate([30,40,30])}
-  U.streak=streak;U.best=Math.max(U.best,streak);save();
+  U.streak=streak;U.best=Math.max(U.best,streak);roundBest=Math.max(roundBest,streak);save();
   log.push({c,ok});
   $("gPts").textContent=pts;$("gStreak").textContent=streak;$("hStreak").textContent=streak;
   $("reveal").innerHTML=`<div class="verdict"><span style="color:${ok?"var(--ok)":"var(--bad)"}">${ok?"✓ Doğru":timeout?"⏱ Süre doldu":"✗ Yanlış"}</span>${ok?`<span style="color:var(--mut)">+${gain}</span>`:""}</div><div class="ru">${esc(c.ru)}</div>${c.note?`<div class="note">💡 ${esc(c.note)}</div>`:""}`;
@@ -322,6 +327,11 @@ function finish(){
   $("rTitle").textContent=pct===100?"Kusursuz! 🏆":pct>=80?"Harika iş! 🔥":pct>=50?"İyi gidiyorsun 👍":"Pratik zamanı 💪";
   $("rSub").textContent=`${r}/${log.length} doğru · ${pts} puan`+(log.length-r?` · ${log.length-r} sahne tekrar listesine eklendi`:"");
   $("rList").innerHTML=log.map(l=>`<div class="ri ${l.ok?"ok":"bad"}"><b>${esc(l.c.ru)}</b><span>${esc(l.c.tr)}</span></div>`).join("");
+  const rA=$("rAuth");
+  if(window.Auth&&Auth.user()){rA.innerHTML='<div class="sub" style="margin-top:-8px">☁️ Puanın lige gönderiliyor…</div>';
+    Auth.submit({points:pts,right:r,total:log.length,best:roundBest}).then(x=>{rA.innerHTML=x&&x.ok?`<div class="sub" style="margin-top:-8px">☁️ Kaydedildi · bu hafta <b style="color:var(--txt)">${x.week}</b> puan · <a href="lig.html" style="color:var(--brand2)">Lig tablosu ›</a></div>`:'<div class="sub" style="margin-top:-8px">Puan şimdilik bu telefonda; bağlantı gelince gönderilecek.</div>'});}
+  else if(window.Auth&&Auth.configured){rA.innerHTML='<button class="btn2" style="margin:0 0 14px;border-color:#ff4d3d66" onclick="Auth.open(\'register\')">☁️ Puanını kaydet ve lige katıl</button>'}
+  else rA.innerHTML="";
   renderHome();show("result");
 }
 $("start").onclick=start;$("again").onclick=start;$("toHome").onclick=()=>{renderHome();show("home")};

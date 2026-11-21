@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0b0d12">
+<title>Rusça Ekran · Lig</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0d12;--panel:#13161e;--panel2:#1a1e28;--line:#262b38;--txt:#f2f4f8;--mut:#8b93a3;--brand:#ff4d3d;--brand2:#ff7a45}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--txt);font-family:Inter,system-ui,sans-serif;padding:env(safe-area-inset-top) 0 calc(env(safe-area-inset-bottom) + 24px)}
+.app{max-width:560px;margin:0 auto;padding:0 16px}
+.bar{display:flex;align-items:center;justify-content:space-between;padding:12px 0}
+.icon-btn{width:36px;height:36px;border-radius:50%;background:var(--panel);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--mut);text-decoration:none}
+.logo{font-weight:800;font-size:18px}.logo b{background:linear-gradient(90deg,var(--brand),var(--brand2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero{background:radial-gradient(120% 120% at 0% 0%,#2a1d08 0%,#13161e 60%);border:1px solid var(--line);border-radius:22px;padding:20px;margin:6px 0 14px}
+.hero h2{font-size:22px}.hero p{color:var(--mut);font-size:13px;margin-top:6px;line-height:1.5}
+.leagues{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.lg{font-size:12px;font-weight:700;padding:6px 10px;border-radius:999px;background:var(--panel2);border:1px solid var(--line)}
+.tabs{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:12px}
+.tabs button{flex:1;border:0;background:none;color:var(--mut);padding:10px;border-radius:9px;font:600 14px Inter,system-ui;cursor:pointer}
+.tabs button.on{background:var(--panel2);color:var(--txt)}
+.podium{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:8px;align-items:end;margin-bottom:12px}
+.pd{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px 8px;text-align:center;min-width:0}
+.pd .m{font-size:26px}.pd .n{font-weight:700;font-size:14px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pd .p{color:var(--mut);font-size:12px;margin-top:2px}
+.pd.first{padding:18px 8px;border-color:#5c4413;background:linear-gradient(180deg,#2a2010,#13161e)}
+.pd.me,.row.me{outline:2px solid var(--brand)}
+.list{display:flex;flex-direction:column;gap:6px}
+.row{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.row .r{width:26px;text-align:center;font-weight:800;color:var(--mut)}
+.row .n{flex:1;min-width:0}.row .n b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.row .n span{font-size:12px;color:var(--mut)}
+.row .p{font-weight:800;font-size:15px;text-align:right}.row .p small{display:block;font-size:11px;color:var(--mut);font-weight:600}
+.empty,.note{color:var(--mut);font-size:14px;text-align:center;padding:24px 10px;line-height:1.5}
+.cta{display:block;width:100%;padding:16px;border:0;border-radius:14px;background:linear-gradient(90deg,var(--brand),var(--brand2));color:#fff;font:800 16px Inter,system-ui;margin:12px 0;cursor:pointer;text-align:center;text-decoration:none}
+.sk{height:58px;border-radius:14px;background:linear-gradient(90deg,#13161e,#1a1e28,#13161e);background-size:200% 100%;animation:sh 1.2s infinite}
+@keyframes sh{to{background-position:-200% 0}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="bar"><a class="icon-btn" href="youtube.html">‹</a><div class="logo">Rusça<b>Ekran</b></div><span data-auth-chip></span></div>
+  <div class="hero">
+    <h2>🏆 Lig tablosu</h2>
+    <p id="sub">Haftalık lig her pazartesi (Moskova saati) sıfırlanır. Ligin, o hafta topladığın puana göre belirlenir.</p>
+    <div class="leagues" id="leagues"></div>
+  </div>
+  <div id="guest"></div>
+  <div class="tabs"><button data-t="weekly" class="on">Bu hafta</button><button data-t="alltime">Tüm zamanlar</button></div>
+  <div id="podium" class="podium"></div>
+  <div id="list" class="list"><div class="sk"></div><div class="sk"></div><div class="sk"></div></div>
+  <a class="cta" href="youtube.html">🎬 Oyna ve puan topla</a>
+</div>
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const esc=t=>String(t??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let data=null,tab="weekly";
+$("leagues").innerHTML=[...Auth.LEAGUES].reverse().map(l=>`<span class="lg" style="color:${l.col}">${l.icon} ${l.name} · ${l.min}+</span>`).join("");
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));draw()});
+function guest(){$("guest").innerHTML=Auth.user()?"":`<button class="cta" onclick="Auth.open('register')">Üye ol ve lige katıl</button>`}
+async function load(){
+  guest();
+  if(!Auth.configured){$("list").innerHTML='<div class="note">Lig sunucusu henüz bağlanmadı.</div>';return}
+  const r=await Auth.call("board",{token:Auth.token()});
+  if(!r.ok){$("list").innerHTML=`<div class="note">${esc(r.error||"Tablo alınamadı.")}</div>`;return}
+  data=r;draw();
+}
+function draw(){
+  if(!data)return;
+  const arr=(tab==="weekly"?data.weekly:data.alltime);const key=tab==="weekly"?"week":"total";
+  const shown=tab==="weekly"?arr.filter(x=>x.week>0||x.me):arr;
+  $("sub").textContent=tab==="weekly"?`Bu hafta ${data.weekStart} pazartesi başladı · ${data.members} üye`:`Tüm zamanların toplam puanı · ${data.members} üye`;
+  if(!shown.length){$("podium").innerHTML="";$("list").innerHTML=`<div class="empty">Bu hafta henüz kimse puan almadı.<br>İlk sen ol! 🚀</div>`;return}
+  const medal=["🥇","🥈","🥉"];
+  const top=shown.slice(0,3);const order=[1,0,2].filter(i=>top[i]);
+  $("podium").innerHTML=order.map(i=>{const x=top[i];return`<div class="pd ${i===0?"first":""} ${x.me?"me":""}"><div class="m">${medal[i]}</div><div class="n">${esc(x.name)}</div><div class="p">${x[key]} puan</div></div>`}).join("");
+  $("list").innerHTML=shown.slice(3).map((x,i)=>{const lg=Auth.league(x.week);return`<div class="row ${x.me?"me":""}"><div class="r">${i+4}</div><div class="n"><b>${esc(x.name)}${x.me?" (sen)":""}</b><span style="color:${lg.col}">${lg.icon} ${lg.name}</span><span> · %${x.acc} doğru · 🔥${x.best}</span></div><div class="p">${x[key]}<small>puan</small></div></div>`}).join("")||"";
+}
+document.addEventListener("auth-change",load);
+load();
+</script>
+</body>
+</html>
