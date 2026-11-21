@@ -68,4 +68,15 @@ window.CLIPS = [
  tr:"Ne oldu, herkes neden fenalaştı? — Balığın son kullanma tarihi geçmişti, atmak gerekirdi.",
  wr:"Ne oldu, herkes neden fenalaştı? — Balık çok tazeydi, hemen pişirmek gerekirdi.",
  note:"просроченный → tarihi geçmiş · надо было → gerekirdi"},
+// ---- Папины дочки (СТС Love, resmi kanal) ----
+{v:"oDaGIIubjzo",title:"Папины дочки · Пуговка вместо Маши",s:56,e:65,
+ ru:"Учителям надо помогать, как это делает Петров. Спасибо, Петров. Я сегодня на высоте.",
+ tr:"Öğretmenlere yardım etmek lazım, Petrov'un yaptığı gibi. Teşekkürler Petrov. Bugün formumdayım.",
+ wr:"Öğretmenlerden yardım istemek lazım, Petrov'un yaptığı gibi. Teşekkürler Petrov. Bugün çok yorgunum.",
+ note:"быть на высоте → formunda olmak, işi hakkıyla yapmak"},
+{v:"oDaGIIubjzo",title:"Папины дочки · Пуговка вместо Маши",s:71,e:76,
+ ru:"Ну как я его поставила на место?",
+ tr:"Nasıl haddini bildirdim ama?",
+ wr:"Onu nereye koyduğumu gördün mü?",
+ note:"поставить кого-то на место → birine haddini bildirmek"},
 ];
