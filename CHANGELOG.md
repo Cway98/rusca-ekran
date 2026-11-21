@@ -1,5 +1,10 @@
 # Rusça Ekran – Güncelleme notları
 
+## 2.1 · Görüş & öneri, zorunlu üyelik (21 Kasım 2026)
+- 💬 **Görüş & öneri:** ana ekran, Durumum, lig sayfası ve profil menüsünden mesaj gönderme (konu, mesaj, isteğe bağlı 1–5 puan). Mesajlar E-Tablo'daki "Görüşler" sayfasına düşer.
+- ⚑ **Sahneyi bildir:** cevaptan sonra "Bu sahnede sorun var" bağlantısı; sahne kimliği mesaja otomatik eklenir.
+- 👤 **Üyelik zorunlu:** giriş yapmadan uygulama açılmaz; çıkış yapınca veya oturum süresi dolunca giriş ekranı tekrar gelir.
+
 ## 2.0 · 21 Kasım 2026 · Seviyeler, hedefler ve rozetler
 - 🧭 Seviye sınavı (10 sahne, uyarlamalı) ve manuel seviye seçimi (A1–C1)
 - 📊 Durumum sayfası: lig, haftalık sıra, üst lige kalan puan, hedefler, rozetler

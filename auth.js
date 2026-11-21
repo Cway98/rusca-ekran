@@ -49,18 +49,34 @@
   .au-row{display:flex;justify-content:space-between;background:#0b0d12;border:1px solid #262b38;border-radius:12px;padding:12px 14px;font-size:14px}
   .au-row b{font-weight:800}
   .au-link{display:block;text-align:center;margin-top:10px;padding:14px;border-radius:14px;background:#1a1e28;border:1px solid #262b38;color:#fff;text-decoration:none;font:700 15px Inter,system-ui}
-  .au-out{width:100%;margin-top:8px;padding:12px;border:0;background:none;color:#8b93a3;font:600 14px Inter,system-ui;cursor:pointer}`;
+  .au-out{width:100%;margin-top:8px;padding:12px;border:0;background:none;color:#8b93a3;font:600 14px Inter,system-ui;cursor:pointer}
+  .au-ov.lock{z-index:1200;background:#07080cf2}
+  .au-box textarea{width:100%;box-sizing:border-box;min-height:120px;resize:vertical;background:#0b0d12;border:1px solid #262b38;border-radius:12px;padding:12px 14px;color:#fff;font:15px/1.45 Inter,system-ui,sans-serif;outline:none}
+  .au-box textarea:focus{border-color:#ff4d3d}
+  .fb-types{display:flex;flex-wrap:wrap;gap:6px}
+  .fb-types button{border:1px solid #262b38;background:#0b0d12;color:#c9cfdb;border-radius:999px;padding:8px 12px;font:600 13px Inter,system-ui;cursor:pointer}
+  .fb-types button.on{border-color:#ff4d3d;background:#2a1210;color:#fff}
+  .fb-stars{display:flex;gap:4px}.fb-stars button{background:none;border:0;font-size:28px;line-height:1;cursor:pointer;color:#3a4152;padding:2px}
+  .fb-stars button.on{color:#fbbf24}
+  .fb-ctx{background:#0b0d12;border:1px dashed #262b38;border-radius:10px;padding:8px 10px;font-size:12px;color:#8b93a3;margin-top:10px}
+  .fb-cnt{text-align:right;font-size:11px;color:#5d6577;margin-top:4px}
+  .fb-ok{text-align:center;padding:18px 0 6px}.fb-ok div{font-size:46px}
+  .au-fb{display:block;width:100%;margin-top:8px;padding:13px;border-radius:14px;background:#0b0d12;border:1px solid #262b38;color:#f2f4f8;font:700 14px Inter,system-ui;cursor:pointer}`;
   const st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
 
   const esc = (t) => String(t ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   let ov = null;
   function close() { if (ov) { ov.remove(); ov = null; } }
 
-  function openLogin(tab) {
-    close(); tab = tab || "login";
-    ov = document.createElement("div"); ov.className = "au-ov";
-    ov.innerHTML = `<div class="au-box"><button class="au-x" aria-label="Kapat">×</button>
-      <h3>Rusça Ekran'a katıl</h3><p>Puanların kaydedilsin, haftalık ligde arkadaşlarınla yarış.</p>
+  const LKEY = "ruscaEkranLastUser";
+  const lastUser = () => { try { return localStorage.getItem(LKEY) || ""; } catch (e) { return ""; } };
+  function openLogin(tab, locked) {
+    if (!locked && REQUIRED && !S.token) locked = true;
+    close(); tab = tab || (lastUser() ? "login" : "register");
+    ov = document.createElement("div"); ov.className = "au-ov" + (locked ? " lock" : "");
+    ov.innerHTML = `<div class="au-box">${locked ? "" : '<button class="au-x" aria-label="Kapat">×</button>'}
+      ${locked ? `<h3>Rusça Ekran'a hoş geldin 👋</h3><p>Uygulamayı kullanmak için üye ol ya da giriş yap. Puanların, seviyen ve hangi sahneleri gördüğün hesabında saklanır.</p>`
+        : `<h3>Rusça Ekran'a katıl</h3><p>Puanların kaydedilsin, haftalık ligde arkadaşlarınla yarış.</p>`}
       <div class="au-tabs"><button data-t="login">Giriş yap</button><button data-t="register">Üye ol</button></div>
       <form autocomplete="on">
         <label>Kullanıcı adı</label><input name="username" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="20" placeholder="ör. can_m">
@@ -80,8 +96,8 @@
     };
     ov.querySelectorAll(".au-tabs button").forEach((b) => (b.onclick = () => setTab(b.dataset.t)));
     setTab(tab);
-    ov.querySelector(".au-x").onclick = close;
-    ov.onclick = (e) => { if (e.target === ov) close(); };
+    if (!locked) { ov.querySelector(".au-x").onclick = close; ov.onclick = (e) => { if (e.target === ov) close(); }; }
+    if (lastUser()) f.username.value = lastUser();
     f.onsubmit = async (e) => {
       e.preventDefault(); err.textContent = "";
       const username = f.username.value.trim(), password = f.password.value;
@@ -92,21 +108,25 @@
       const r = await call(tab, { username, password });
       go.disabled = false; setTab(tab);
       if (!r.ok) { err.textContent = r.error || "Bir sorun oluştu."; return; }
-      S = { token: r.token, username: r.username }; save(); close(); render();
+      S = { token: r.token, username: r.username }; save(); try { localStorage.setItem(LKEY, r.username); } catch (e) {} close(); render();
       document.dispatchEvent(new CustomEvent("auth-change"));
       flushPending();
     };
-    setTimeout(() => f.username.focus(), 50);
+    setTimeout(() => (f.username.value ? f.password : f.username).focus(), 50);
   }
+  // Üyelik zorunlu: oturum yoksa kapatılamayan giriş ekranı
+  const REQUIRED = !!API;
+  function gate() { if (REQUIRED && !S.token && !(ov && ov.classList.contains("lock"))) openLogin(null, true); }
 
   async function openMe() {
     close();
     ov = document.createElement("div"); ov.className = "au-ov";
     ov.innerHTML = `<div class="au-box"><button class="au-x">×</button><h3>👤 ${esc(S.username)}</h3><p>Yükleniyor…</p><div class="au-me"></div>
-      <a class="au-link" href="lig.html">🏆 Lig tablosu</a><button class="au-out">Çıkış yap</button></div>`;
+      <a class="au-link" href="lig.html">🏆 Lig tablosu</a><button class="au-fb">💬 Görüş & öneri gönder</button><button class="au-out">Çıkış yap</button></div>`;
     document.body.appendChild(ov);
     ov.querySelector(".au-x").onclick = close; ov.onclick = (e) => { if (e.target === ov) close(); };
-    ov.querySelector(".au-out").onclick = () => { S = {}; save(); close(); render(); document.dispatchEvent(new CustomEvent("auth-change")); };
+    ov.querySelector(".au-fb").onclick = () => { close(); openFeedback(); };
+    ov.querySelector(".au-out").onclick = () => { S = {}; save(); close(); render(); document.dispatchEvent(new CustomEvent("auth-change")); gate(); };
     const r = await call("me", { token: S.token });
     if (!ov) return;
     if (!r.ok) { ov.querySelector("p").textContent = r.error || "Bilgiler alınamadı."; return; }
@@ -114,6 +134,48 @@
     ov.querySelector("p").innerHTML = `Bu haftaki ligin: <b style="color:${lg.col}">${lg.icon} ${lg.name}</b>`;
     ov.querySelector(".au-me").innerHTML = [["Bu hafta", r.week + " puan"], ["Toplam", r.total + " puan"], ["Doğruluk", r.played ? r.acc + "%" : "–"], ["En iyi seri", "🔥 " + r.best], ["Cevaplanan", r.played + " sahne"]]
       .map(([a, b]) => `<div class="au-row"><span>${a}</span><b>${b}</b></div>`).join("");
+  }
+
+  /* ---------- görüş & öneri ---------- */
+  const FB_TYPES = [["oneri", "💡 Öneri"], ["eksik", "➕ Eksik içerik"], ["hata", "🐞 Hata"], ["sahne", "🎬 Sahne sorunu"], ["diger", "💬 Diğer"]];
+  let fov = null;
+  function openFeedback(o) {
+    o = o || {};
+    if (!S.token) { gate(); return; }
+    if (fov) fov.remove();
+    let type = FB_TYPES.some((t) => t[0] === o.type) ? o.type : "oneri", rating = 0;
+    fov = document.createElement("div"); fov.className = "au-ov";
+    fov.innerHTML = `<div class="au-box"><button class="au-x" aria-label="Kapat">×</button>
+      <h3>💬 Görüş & öneri</h3><p>Neyi eksik buldun, ne çalışmadı, ne eklensin? Her mesajı okuyup uygulamayı buna göre geliştiriyoruz.</p>
+      <label>Konu</label><div class="fb-types">${FB_TYPES.map(([k, t]) => `<button type="button" data-k="${k}">${t}</button>`).join("")}</div>
+      ${o.ctx ? `<div class="fb-ctx">Sahne: ${esc(o.ctx)}</div>` : ""}
+      <label>Mesajın</label><textarea maxlength="1000" placeholder=""></textarea><div class="fb-cnt">0 / 1000</div>
+      <label>Uygulamayı genel olarak nasıl buluyorsun? <span style="font-weight:500">(isteğe bağlı)</span></label>
+      <div class="fb-stars">${[1, 2, 3, 4, 5].map((n) => `<button type="button" data-n="${n}" aria-label="${n} yıldız">★</button>`).join("")}</div>
+      <div class="au-err"></div><button class="au-go">Gönder</button></div>`;
+    document.body.appendChild(fov);
+    const box = fov.querySelector(".au-box"), ta = fov.querySelector("textarea"), err = fov.querySelector(".au-err"), go = fov.querySelector(".au-go");
+    const PH = { oneri: "ör. Sahnelerde kelime kelime çeviri de görmek isterim.", eksik: "ör. Daha çok iş hayatı / şantiye diyalogları olsun.", hata: "ör. Lig sayfası açılmıyor, iPhone Safari.", sahne: "ör. Çeviri yanlış ya da video cümleden önce duruyor.", diger: "Aklındaki her şeyi yazabilirsin." };
+    const setType = (k) => { type = k; fov.querySelectorAll(".fb-types button").forEach((b) => b.classList.toggle("on", b.dataset.k === k)); ta.placeholder = PH[k]; };
+    const setRating = (n) => { rating = rating === n ? 0 : n; fov.querySelectorAll(".fb-stars button").forEach((b) => b.classList.toggle("on", +b.dataset.n <= rating)); };
+    fov.querySelectorAll(".fb-types button").forEach((b) => (b.onclick = () => setType(b.dataset.k)));
+    fov.querySelectorAll(".fb-stars button").forEach((b) => (b.onclick = () => setRating(+b.dataset.n)));
+    ta.oninput = () => { fov.querySelector(".fb-cnt").textContent = ta.value.length + " / 1000"; };
+    const shut = () => { if (fov) { fov.remove(); fov = null; } };
+    fov.querySelector(".au-x").onclick = shut; fov.onclick = (e) => { if (e.target === fov) shut(); };
+    setType(type);
+    go.onclick = async () => {
+      const text = ta.value.trim(); err.textContent = "";
+      if (text.length < 5) { err.textContent = "Biraz daha ayrıntı yazar mısın? (en az 5 karakter)"; return; }
+      go.disabled = true; go.textContent = "Gönderiliyor…";
+      const r = await call("feedback", { token: S.token, type, rating, text, ctx: o.ctx || "", page: location.pathname.split("/").pop() || "index.html", ua: navigator.userAgent.slice(0, 150) });
+      if (!fov) return;
+      go.disabled = false; go.textContent = "Gönder";
+      if (!r.ok) { err.textContent = r.error || "Gönderilemedi, biraz sonra tekrar dene."; return; }
+      box.innerHTML = `<div class="fb-ok"><div>🙏</div><h3>Teşekkürler!</h3><p>Mesajın ulaştı. Gelen görüşlere göre bir sonraki sürümü planlıyoruz; değişiklikleri "Yenilikler" duyurusunda görebilirsin.</p></div><button class="au-go">Tamam</button>`;
+      box.querySelector(".au-go").onclick = shut;
+    };
+    setTimeout(() => ta.focus(), 50);
   }
 
   /* ---------- skor gönderme (çevrimdışıysa sonra dener) ---------- */
@@ -150,9 +212,12 @@
       el.innerHTML = S.token ? `👤 ${esc(S.username)}` : "Giriş yap";
       el.onclick = (e) => { e.preventDefault(); S.token ? openMe() : openLogin("login"); };
     });
+    gate();
   }
   document.addEventListener("DOMContentLoaded", () => { render(); flushPending(); });
+  // [data-feedback] olan her bağlantı görüş formunu açar (sonradan eklenenler dahil)
+  document.addEventListener("click", (e) => { const el = e.target.closest && e.target.closest("[data-feedback]"); if (el) { e.preventDefault(); openFeedback({ type: el.dataset.feedback || "" }); } });
   if (document.readyState !== "loading") render();
 
-  window.Auth = { user: () => (S.token ? S.username : null), token: () => S.token, open: openLogin, openMe, submit, call, league, LEAGUES, configured: !!API };
+  window.Auth = { user: () => (S.token ? S.username : null), token: () => S.token, open: openLogin, openMe, feedback: openFeedback, submit, call, league, LEAGUES, configured: !!API };
 })();

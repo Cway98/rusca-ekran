@@ -87,6 +87,7 @@ button{font-family:inherit;cursor:pointer;border:0;color:inherit;background:none
 .reveal{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;animation:up .25s ease-out}
 @keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .reveal .ru{font-size:17px;font-weight:700;line-height:1.4}
+.reveal .flag{display:inline-block;margin-top:8px;font-size:12px;color:var(--mut);text-decoration:none}
 .reveal .note{font-size:13px;color:var(--gold);margin-top:8px}
 .reveal .verdict{font-size:13px;font-weight:700;margin-bottom:6px;display:flex;justify-content:space-between}
 .next{display:flex;gap:8px}
@@ -163,7 +164,7 @@ button{font-family:inherit;cursor:pointer;border:0;color:inherit;background:none
     <div style="flex:1"></div>
     <button class="cta" id="start" style="margin-top:0;margin-bottom:12px">▶ Başla</button>
     <a href="durum.html" id="leagueCard" style="display:flex;align-items:center;justify-content:space-between;text-decoration:none;color:var(--txt);background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:12px"><span><b style="font-size:15px">📊 Durumum & 🏆 Lig</b><br><small style="color:var(--mut)" id="leagueTxt">Haftalık hedefler, rozetler, sıralama</small></span><span style="color:var(--mut)">›</span></a>
-    <div class="sub-links"><a href="add.html">➕ Kendi sahneni ekle</a><a href="#" onclick="ReleaseNotes.open();return false">📝 Yenilikler</a><a href="./">Cümle oyunu ›</a></div>
+    <div class="sub-links"><a href="add.html">➕ Kendi sahneni ekle</a><a href="#" data-feedback>💬 Görüş & öneri</a><a href="#" onclick="ReleaseNotes.open();return false">📝 Yenilikler</a><a href="./">Cümle oyunu ›</a></div>
   </section>
 
   <!-- ===== OYUN ===== -->
@@ -212,10 +213,10 @@ button{font-family:inherit;cursor:pointer;border:0;color:inherit;background:none
   <button class="ghostbtn" id="lvClose">Kapat</button>
 </div></div>
 
-<script src="config.js?v=8"></script>
-<script src="auth.js?v=8"></script>
+<script src="config.js?v=9"></script>
+<script src="auth.js?v=9"></script>
 <script src="clips.js?v=8"></script>
-<script src="notes.js?v=8"></script>
+<script src="notes.js?v=9"></script>
 <script>
 const $=id=>document.getElementById(id);
 const esc=t=>String(t??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -373,7 +374,8 @@ function answer(ok,btn,timeout){
   U.streak=streak;U.best=Math.max(U.best,streak);roundBest=Math.max(roundBest,streak);save();
   log.push({c,ok});
   $("gPts").textContent=pts;$("gStreak").textContent=streak;$("hStreak").textContent=streak;
-  $("reveal").innerHTML=`<div class="verdict"><span style="color:${ok?"var(--ok)":"var(--bad)"}">${ok?"✓ Doğru":timeout?"⏱ Süre doldu":"✗ Yanlış"}</span>${ok?`<span style="color:var(--mut)">+${gain}</span>`:""}</div><div class="ru">${esc(c.ru)}</div>${c.note?`<div class="note">💡 ${esc(c.note)}</div>`:""}`;
+  $("reveal").innerHTML=`<div class="verdict"><span style="color:${ok?"var(--ok)":"var(--bad)"}">${ok?"✓ Doğru":timeout?"⏱ Süre doldu":"✗ Yanlış"}</span>${ok?`<span style="color:var(--mut)">+${gain}</span>`:""}</div><div class="ru">${esc(c.ru)}</div>${c.note?`<div class="note">💡 ${esc(c.note)}</div>`:""}<a href="#" class="flag" id="flag">⚑ Bu sahnede sorun var</a>`;
+  $("flag").onclick=e=>{e.preventDefault();stopAuto();Auth.feedback({type:"sahne",ctx:`${cid(c)} · ${c.title||""} · ${c.ru}`})};
   $("mask").classList.add("hide");$("prompt").textContent="";$("after").classList.remove("hide");$("rep").classList.remove("hide");
   // otomatik devam (doğruysa kısa, yanlışsa uzun)
   startAuto(ok?2600:5200);

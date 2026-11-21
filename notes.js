@@ -2,6 +2,14 @@
 // Yeni sürüm çıkınca en üste bir kayıt ekle; duyuru o tarihten itibaren 3 gün gösterilir.
 window.RE_RELEASES = [
   {
+    v: "2.1", date: "2026-11-21", title: "Görüş & öneri, zorunlu üyelik",
+    items: [
+      ["💬", "Görüş & öneri", "Ana ekrandan, Durumum sayfasından veya profil menünden bize yaz: öneri, eksik içerik, hata ya da genel yorum. Her mesajı okuyup sonraki sürümleri buna göre planlıyoruz."],
+      ["⚑", "Sahneyi bildir", "Cevaptan sonra çıkan “Bu sahnede sorun var” ile yanlış çeviriyi veya erken/geç duran videoyu tek dokunuşla bildir."],
+      ["👤", "Üyelik artık zorunlu", "Uygulamayı kullanmak için üye olman ya da giriş yapman gerekiyor. Böylece puanın, seviyen ve gördüğün sahneler her cihazda seninle gelir."],
+    ],
+  },
+  {
     v: "2.0", date: "2026-11-21", title: "Seviyeler, hedefler ve rozetler",
     items: [
       ["🧭", "Seviye sınavı", "10 sahnelik uyarlamalı sınav seviyeni A1–C1 arasında otomatik belirler. İstersen seviyeni kendin de seçebilirsin."],

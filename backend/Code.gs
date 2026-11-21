@@ -8,6 +8,7 @@
 const USERS = 'Üyeler';
 const SCORES = 'Skorlar';
 const PROFILE = 'Profil';
+const FEEDBACK = 'Görüşler';
 const TOKEN_DAYS = 60;
 const TZ = 'Europe/Moscow';
 const SEEN_MAX = 4000;
@@ -41,6 +42,7 @@ function doPost(e) {
       case 'me': return out(me(req));
       case 'profile': return out(profile(req));
       case 'setLevel': return out(setLevel(req));
+      case 'feedback': return out(feedback(req));
       default: return out({ ok: false, error: 'Bilinmeyen işlem' });
     }
   } catch (err) {
@@ -66,6 +68,7 @@ function sheet(name, headers) {
 }
 const usersSheet = () => sheet(USERS, ['anahtar', 'kullanıcı adı', 'tuz', 'şifre özeti', 'kayıt', 'oturum', 'oturum bitiş']);
 const scoresSheet = () => sheet(SCORES, ['anahtar', 'kullanıcı adı', 'toplam puan', 'hafta', 'haftalık puan', 'doğru', 'toplam soru', 'en iyi seri', 'son oyun']);
+const feedbackSheet = () => sheet(FEEDBACK, ['zaman', 'kullanıcı adı', 'konu', 'puan (1-5)', 'mesaj', 'sahne', 'sayfa', 'cihaz', 'durum', 'not']);
 const profileSheet = () => sheet(PROFILE, ['anahtar', 'seviye', 'sınav', 'görülen sahneler', 'hafta', 'hafta istatistiği', 'rozetler']);
 
 function hash(salt, pw) {
@@ -269,5 +272,24 @@ function setLevel(r) {
   } finally { lock.releaseLock(); }
 }
 
+/* ---------- görüş & öneri ---------- */
+const FB_TYPES = { oneri: 'Öneri', eksik: 'Eksik içerik', hata: 'Hata', sahne: 'Sahne sorunu', diger: 'Diğer' };
+// E-Tablo formül enjeksiyonunu önle (=, +, -, @ ile başlayan metinler)
+function safeCell(t, max) { t = String(t || '').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').trim().slice(0, max); return /^[=+\-@]/.test(t) ? "'" + t : t; }
+function feedback(r) {
+  const u = userByToken(r.token); if (!u) return { ok: false, auth: false, error: 'Görüş göndermek için giriş yapmalısın.' };
+  const text = safeCell(r.text, 1000);
+  if (text.length < 5) return { ok: false, error: 'Mesaj çok kısa.' };
+  if (tooMany('fb', u.key, 1, 20)) return { ok: false, error: 'Biraz bekleyip tekrar gönder.' };
+  if (tooMany('fbday', u.key + ':' + today(), 15, 86400)) return { ok: false, error: 'Bugünlük görüş sınırına ulaştın, yarın tekrar yazabilirsin.' };
+  const type = FB_TYPES[r.type] || 'Diğer';
+  const rating = Math.max(0, Math.min(5, Math.floor(Number(r.rating) || 0)));
+  const lock = LockService.getScriptLock(); lock.waitLock(10000);
+  try {
+    feedbackSheet().appendRow([new Date(), u.name, type, rating || '', text, safeCell(r.ctx, 200), safeCell(r.page, 40), safeCell(r.ua, 150), 'yeni', '']);
+    return { ok: true };
+  } finally { lock.releaseLock(); }
+}
+
 /** Elle bir kez çalıştırılabilir: sayfaları oluşturur. */
-function kurulum() { usersSheet(); scoresSheet(); profileSheet(); }
+function kurulum() { usersSheet(); scoresSheet(); profileSheet(); feedbackSheet(); }

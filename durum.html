@@ -64,10 +64,10 @@ a{color:inherit}
   <div data-release-banner></div>
   <div id="root"><div class="sk"></div><div class="sk"></div><div class="sk"></div></div>
 </div>
-<script src="config.js?v=8"></script>
-<script src="auth.js?v=8"></script>
+<script src="config.js?v=9"></script>
+<script src="auth.js?v=9"></script>
 <script src="clips.js?v=8"></script>
-<script src="notes.js?v=8"></script>
+<script src="notes.js?v=9"></script>
 <script>
 const $=id=>document.getElementById(id);
 const esc=t=>String(t??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -97,6 +97,7 @@ async function load(){
     <div class="rankline">${p.rank===1?"🥇 Bu hafta liderliktesin!":p.aboveName?`<b style="color:var(--txt)">${esc(p.aboveName)}</b>'ı geçmek için <b style="color:var(--txt)">${p.gapToAbove}</b> puan`:""} · ${p.members} üye</div>
   </div>
   <a class="btn" href="lig.html" style="display:block;margin-bottom:6px">🏆 Lig tablosunun tamamı</a>
+  <a class="btn" href="#" data-feedback style="display:block;margin-bottom:6px">💬 Görüş & öneri gönder</a>
 
   <div class="sec">Haftalık hedefler · ${goalsDone}/${p.goals.length}</div>
   <div class="card" style="padding:6px 18px">${p.goals.map(g=>{
