@@ -1,6 +1,14 @@
 // Hazır YouTube sahneleri. Her satır: v = video ID, s/e = başlangıç/bitiş (saniye),
 // ru = Rusça cümle, tr = doğru çeviri, wr = yanlış (yakın) şık, note = kelime notu, title = video adı.
 // Zamanlar YouTube transkriptinden alındı; ±1-2 sn kayma olabilir.
+// Video bilgileri: seviye (A1–C1), kategori (series/anim/film/life), gömülü altyazı (burned).
+window.VIDEOS = {
+  "7sFEx8Z4XQ8": {lvl:"A1", cat:"life",   burned:true,  name:"Super Easy Russian · Günlük rutin"},
+  "3rcBCMlVxSc": {lvl:"A1", cat:"life",   burned:true,  name:"Super Easy Russian · Kendini tanıt"},
+  "oDaGIIubjzo": {lvl:"B1", cat:"series", burned:false, name:"Папины дочки"},
+  "tkJ5aiWOkXs": {lvl:"B1", cat:"life",   burned:true,  name:"Easy Russian · Sohbet"},
+  "YJXtkGnepxI": {lvl:"B2", cat:"series", burned:false, name:"Кухня"},
+};
 window.CLIPS = [
 // ---- Кухня · 3. sezon, 56–60. bölümler ----
 {v:"YJXtkGnepxI",title:"Кухня · 3. sezon, 56–60",s:45,e:54,

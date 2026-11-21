@@ -18,7 +18,7 @@ const GOALS = [
   { id: 'g50', icon: '🎯', title: 'Bu hafta 50 sahne cevapla', type: 'n', target: 50, bonus: 50 },
   { id: 'gdays', icon: '📅', title: '5 farklı gün oyna', type: 'days', target: 5, bonus: 75 },
   { id: 'gacc', icon: '👂', title: 'En az 30 sahnede %80 doğruluk', type: 'acc', target: 80, min: 30, bonus: 75 },
-  { id: 'gstreak', icon: '🔥', title: '10 doğruluk seri yakala', type: 'streak', target: 10, bonus: 50 },
+  { id: 'gstreak', icon: '🔥', title: 'Üst üste 10 doğru yap', type: 'streak', target: 10, bonus: 50 },
 ];
 // Kalıcı rozetler (bir kez kazanılır)
 const MILESTONES = [
