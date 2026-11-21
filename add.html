@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Rusça Ekran · Sahne ekle</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1115;--card:#181b22;--card2:#1f232c;--line:#2a2f3a;--txt:#eef0f4;--mut:#9aa1ad;--acc:#e8473c;--ok:#2fbf71;--bad:#e5484d;--blue:#4c8dff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,sans-serif}
+body{padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 24px)}
+.wrap{max-width:560px;margin:0 auto}
+h1{font-size:22px;margin:4px 0 2px}h1 span{color:var(--acc)}
+.sub{color:var(--mut);font-size:14px;margin-bottom:16px;line-height:1.45}
+a.back{color:var(--mut);text-decoration:none;font-size:15px;display:inline-block;margin-bottom:10px}
+.tabs{display:flex;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:14px}
+.tabs button{flex:1;border:0;background:none;color:var(--mut);padding:10px;border-radius:9px;font-family:inherit;font-size:14px;cursor:pointer}
+.tabs button.on{background:var(--card2);color:var(--txt);font-weight:600}
+.player{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden;border:1px solid var(--line)}
+.player iframe,.player>div{position:absolute;inset:0;width:100%;height:100%}
+.cover{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;background:#000c;font-weight:600;cursor:pointer}
+.cover b{background:var(--acc);padding:12px 18px;border-radius:999px}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:15px;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;margin-top:10px}
+.btn.main{background:var(--acc);color:#fff}.btn.sec{background:var(--card2);color:var(--txt);border:1px solid var(--line)}
+.btn.small{padding:11px;font-size:14px;margin-top:0}
+.btn:disabled{opacity:.4}
+.row{display:flex;gap:8px;margin-top:10px}.row .btn{margin-top:0}
+.opt{display:block;width:100%;text-align:left;background:var(--card);border:2px solid var(--line);color:var(--txt);border-radius:14px;padding:15px;font-size:16px;font-family:inherit;margin-top:10px;cursor:pointer;line-height:1.35}
+.opt.ok{border-color:var(--ok);background:#12301f}.opt.bad{border-color:var(--bad);background:#3a1416}
+.ru{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:17px;font-weight:600;margin-top:10px;line-height:1.4}
+.ru small{display:block;color:var(--mut);font-weight:400;font-size:14px;margin-top:4px}
+.fb{font-weight:600;margin-top:12px;min-height:20px}
+.top{display:flex;justify-content:space-between;color:var(--mut);font-size:14px;margin:10px 0 4px}
+.empty{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:16px;color:var(--mut);font-size:14px;line-height:1.5}
+.vid{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:10px;display:flex;gap:12px;align-items:center;cursor:pointer}
+.vid img{width:96px;border-radius:8px;flex:none}
+.vid b{display:block;font-size:15px;margin-bottom:4px}.vid span{color:var(--mut);font-size:13px}
+input,textarea{width:100%;background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:16px;font-family:inherit;margin-top:8px}
+textarea{min-height:56px;resize:vertical}
+label{display:block;font-size:13px;color:var(--mut);margin-top:12px}
+.marks{display:flex;justify-content:space-between;font-size:14px;color:var(--mut);margin-top:10px}
+.marks b{color:var(--txt)}
+.clip{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:8px;font-size:14px}
+.clip b{display:block}.clip span{color:var(--mut)}
+.clip button{float:right;background:none;border:0;color:var(--bad);font-size:16px;cursor:pointer}
+.hide{display:none!important}
+.note{font-size:13px;color:var(--mut);margin-top:8px;line-height:1.45}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 20px);transform:translateX(-50%);background:#222a;backdrop-filter:blur(8px);padding:10px 16px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="youtube.html">‹ Video modu</a>
+<h1>YouTube <span>Sahneleri</span></h1>
+<div class="sub">Gerçek Rusça videolar. Sahne oynar, cümle bitince durur, doğru çeviriyi seçersin.</div>
+
+<div class="tabs" id="tabs">
+  <button data-t="play" class="on">▶ İzle & cevapla</button>
+  <button data-t="add">➕ Sahne ekle</button>
+</div>
+
+<!-- ============ İZLE ============ -->
+<section id="t-play">
+  <div id="library"></div>
+  <div id="game" class="hide">
+    <div class="top"><span id="gTitle"></span><span id="gCount"></span></div>
+    <div class="player"><div id="gPlayer"></div><div class="cover" id="gCover"><b>▶ Sahneyi oynat</b></div></div>
+    <div class="fb" id="gFb"></div>
+    <div id="gOpts"></div>
+    <div id="gRu" class="ru hide"></div>
+    <div class="row hide" id="gAfter">
+      <button class="btn sec small" id="gAgain">🔁 Tekrar</button>
+      <button class="btn sec small" id="gSlow">🐢 Yavaş</button>
+      <button class="btn main small" id="gNext">Devam →</button>
+    </div>
+    <button class="btn sec" id="gQuit">‹ Video listesi</button>
+  </div>
+</section>
+
+<!-- ============ EKLE ============ -->
+<section id="t-add" class="hide">
+  <label>YouTube linki</label>
+  <div class="row" style="margin-top:0"><input id="aUrl" placeholder="https://youtu.be/..." style="flex:1"><button class="btn main small" id="aLoad" style="width:auto;padding:0 16px;margin-top:8px">Aç</button></div>
+  <div class="note">Rusça altyazısı olan videolar en iyisi. Video Rusça altyazıyla açılır, böylece cümleyi kolayca yazarsın.</div>
+  <div id="aBox" class="hide">
+    <div class="player" style="margin-top:12px"><div id="aPlayer"></div></div>
+    <div class="row">
+      <button class="btn sec small" id="aBack">⏪ 3 sn</button>
+      <button class="btn sec small" id="aStart">⏺ Başlangıç</button>
+      <button class="btn sec small" id="aEnd">⏹ Bitiş</button>
+    </div>
+    <div class="marks"><span>Başlangıç: <b id="aS">–</b></span><span>Bitiş: <b id="aE">–</b></span><button class="btn sec small" id="aTest" style="width:auto;padding:6px 12px">▶ Dene</button></div>
+    <label>Rusça cümle (videoda duyduğun)</label><textarea id="aRu" placeholder="Например: Слушай, давай…"></textarea>
+    <label>Türkçe anlamı (doğru şık)</label><input id="aTr">
+    <label>Yanlış şık (isteğe bağlı, boş kalırsa otomatik)</label><input id="aWr">
+    <button class="btn main" id="aSave">Sahneyi kaydet</button>
+  </div>
+  <div id="aList"></div>
+  <button class="btn sec hide" id="aCopy">📋 Sahnelerimi kopyala (Claude'a göndermek için)</button>
+  <div class="note">Eklediğin sahneler bu telefonda saklanır. Kopyalayıp Claude'a gönderirsen uygulamaya kalıcı olarak eklenir, yanlış şıkları da o hazırlar.</div>
+</section>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="clips.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+function toast(t){const e=$("toast");e.textContent=t;e.classList.add("on");setTimeout(()=>e.classList.remove("on"),1800)}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function fmt(t){if(t==null)return"–";const m=Math.floor(t/60),s=(t%60).toFixed(1);return m+":"+(s<10?"0":"")+s}
+function vidId(u){const m=String(u).match(/(?:youtu\.be\/|v=|shorts\/|embed\/|live\/)([\w-]{11})/);return m?m[1]:(/^[\w-]{11}$/.test(u)?u:null)}
+const KEY="ruscaEkranYT_v1";
+let U={mine:[],weak:[]};try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s)U=Object.assign(U,s)}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(U))}catch(e){}}
+
+/* sekmeler */
+document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("#tabs button").forEach(x=>x.classList.remove("on"));b.classList.add("on");
+  $("t-play").classList.toggle("hide",b.dataset.t!=="play");$("t-add").classList.toggle("hide",b.dataset.t!=="add");
+  stopAll();if(b.dataset.t==="play")renderLib();else renderMine();
+});
+
+/* YouTube API */
+let ytReady=false,gP=null,aP=null,poll=null;
+window.onYouTubeIframeAPIReady=()=>{ytReady=true};
+const s=document.createElement("script");s.src="https://www.youtube.com/iframe_api";document.head.appendChild(s);
+const PV={playsinline:1,rel:0,modestbranding:1,cc_load_policy:1,cc_lang_pref:"ru",hl:"ru",iv_load_policy:3};
+function stopAll(){clearInterval(poll);try{gP&&gP.pauseVideo()}catch(e){}try{aP&&aP.pauseVideo()}catch(e){}}
+
+/* ======== KÜTÜPHANE ======== */
+function allClips(){return [...(window.CLIPS||[]),...U.mine.map(c=>Object.assign({mine:1},c))]}
+function groups(){const g={};allClips().forEach(c=>{(g[c.v]=g[c.v]||{v:c.v,title:c.title||"Video",clips:[]}).clips.push(c)});return Object.values(g)}
+function renderLib(){
+  $("game").classList.add("hide");const L=$("library");L.classList.remove("hide");
+  const G=groups();
+  if(!G.length){L.innerHTML='<div class="empty">Henüz sahne yok. <b>➕ Sahne ekle</b> sekmesinden bir YouTube videosu açıp kendi sahnelerini ekleyebilirsin ya da Claude\'a video linki ve transkript gönderirsen hazır sahneler buraya eklenir.</div>';return}
+  L.innerHTML="";
+  const allBtn=document.createElement("button");allBtn.className="btn main";allBtn.textContent="🎲 Karışık 10 sahne";allBtn.onclick=()=>startGame(shuffle(allClips()).slice(0,10),"Karışık");L.appendChild(allBtn);
+  G.forEach(g=>{const d=document.createElement("div");d.className="vid";
+    d.innerHTML=`<img src="https://i.ytimg.com/vi/${g.v}/mqdefault.jpg" alt=""><div><b>${esc(g.title)}</b><span>${g.clips.length} sahne</span></div>`;
+    d.onclick=()=>startGame([...g.clips].sort((a,b)=>a.s-b.s),g.title);L.appendChild(d)});
+}
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+
+/* ======== OYUN ======== */
+let GQ=[],gi=0,answered=false,curV=null;
+function startGame(list,title){
+  if(!ytReady){toast("YouTube yükleniyor, bir saniye…");return}
+  GQ=list;gi=0;$("library").classList.add("hide");$("game").classList.remove("hide");$("gTitle").textContent=title;
+  if(!gP){gP=new YT.Player("gPlayer",{playerVars:PV,events:{onReady:()=>prep()}})}else prep();
+}
+function wrongFor(c){
+  if(c.wr)return c.wr;
+  const pool=allClips().filter(x=>x!==c&&x.tr&&x.tr!==c.tr);
+  return pool.length?pool[Math.floor(Math.random()*pool.length)].tr:"(Bu cümle videoda geçmiyor)";
+}
+function prep(){
+  const c=GQ[gi];answered=false;
+  $("gCount").textContent=(gi+1)+"/"+GQ.length;$("gFb").textContent="";$("gRu").classList.add("hide");$("gAfter").classList.add("hide");
+  $("gOpts").innerHTML="";$("gCover").classList.remove("hide");
+  if(curV!==c.v){gP.cueVideoById({videoId:c.v,startSeconds:c.s});curV=c.v}else{try{gP.seekTo(c.s,true);gP.pauseVideo()}catch(e){}}
+}
+function playSeg(rate){
+  const c=GQ[gi];$("gCover").classList.add("hide");
+  try{gP.setPlaybackRate(rate||1);gP.seekTo(c.s,true);gP.playVideo()}catch(e){}
+  clearInterval(poll);
+  poll=setInterval(()=>{let t=0;try{t=gP.getCurrentTime()}catch(e){}if(t>=c.e){clearInterval(poll);try{gP.pauseVideo()}catch(e){}if(!answered)showOpts()}},80);
+}
+$("gCover").onclick=()=>playSeg(1);
+function showOpts(){
+  const c=GQ[gi];const o=$("gOpts");o.innerHTML="";
+  shuffle([[c.tr,true],[wrongFor(c),false]]).forEach(([t,ok])=>{const b=document.createElement("button");b.className="opt";b.textContent=t;b.dataset.ok=ok;b.onclick=()=>answer(ok,b);o.appendChild(b)});
+}
+function answer(ok,btn){
+  if(answered)return;answered=true;const c=GQ[gi];
+  document.querySelectorAll("#gOpts .opt").forEach(b=>{if(b.dataset.ok==="true")b.classList.add("ok");else if(b===btn)b.classList.add("bad")});
+  $("gFb").innerHTML=ok?'<span style="color:var(--ok)">✓ Doğru</span>':'<span style="color:var(--bad)">✗ Yanlış</span>';
+  $("gRu").innerHTML=esc(c.ru)+(c.note?`<small>${esc(c.note)}</small>`:"");$("gRu").classList.remove("hide");$("gAfter").classList.remove("hide");
+}
+$("gAgain").onclick=()=>playSeg(1);
+$("gSlow").onclick=()=>playSeg(0.75);
+$("gNext").onclick=()=>{gi++;if(gi<GQ.length){prep();playSeg(1)}else{toast("Tur bitti! 🎉");stopAll();renderLib()}};
+$("gQuit").onclick=()=>{stopAll();renderLib()};
+
+/* ======== EKLE ======== */
+let aV=null,aS=null,aE=null;
+$("aLoad").onclick=()=>{
+  const v=vidId($("aUrl").value.trim());if(!v){toast("Geçerli bir YouTube linki değil");return}
+  if(!ytReady){toast("YouTube yükleniyor, tekrar dene");return}
+  aV=v;aS=aE=null;updMarks();$("aBox").classList.remove("hide");
+  if(!aP)aP=new YT.Player("aPlayer",{videoId:v,playerVars:PV});else aP.cueVideoById(v);
+};
+function now(){try{return Math.round(aP.getCurrentTime()*10)/10}catch(e){return 0}}
+function updMarks(){$("aS").textContent=fmt(aS);$("aE").textContent=fmt(aE)}
+$("aBack").onclick=()=>{try{aP.seekTo(Math.max(0,now()-3),true)}catch(e){}};
+$("aStart").onclick=()=>{aS=now();if(aE!=null&&aE<=aS)aE=null;updMarks()};
+$("aEnd").onclick=()=>{aE=now();try{aP.pauseVideo()}catch(e){}updMarks()};
+$("aTest").onclick=()=>{if(aS==null||aE==null){toast("Önce başlangıç ve bitiş seç");return}
+  try{aP.seekTo(aS,true);aP.playVideo()}catch(e){}clearInterval(poll);poll=setInterval(()=>{if(now()>=aE){clearInterval(poll);aP.pauseVideo()}},80)};
+$("aSave").onclick=()=>{
+  const ru=$("aRu").value.trim(),tr=$("aTr").value.trim(),wr=$("aWr").value.trim();
+  if(aS==null||aE==null||aE<=aS){toast("Başlangıç ve bitişi işaretle");return}
+  if(!ru||!tr){toast("Rusça cümle ve Türkçe anlam gerekli");return}
+  let title="Videom";try{title=aP.getVideoData().title||title}catch(e){}
+  U.mine.push({v:aV,title,s:aS,e:aE,ru,tr,wr:wr||undefined});save();
+  $("aRu").value=$("aTr").value=$("aWr").value="";aS=aE=null;updMarks();renderMine();toast("Sahne kaydedildi ✓");
+};
+function renderMine(){
+  const L=$("aList");L.innerHTML=U.mine.length?'<label>Eklediğim sahneler ('+U.mine.length+')</label>':"";
+  U.mine.forEach((c,i)=>{const d=document.createElement("div");d.className="clip";
+    d.innerHTML=`<button>✕</button><b>${esc(c.ru)}</b><span>${esc(c.tr)} · ${fmt(c.s)}–${fmt(c.e)}</span>`;
+    d.querySelector("button").onclick=()=>{U.mine.splice(i,1);save();renderMine()};L.appendChild(d)});
+  $("aCopy").classList.toggle("hide",!U.mine.length);
+}
+$("aCopy").onclick=async()=>{
+  const txt="Rusça Ekran sahnelerim:\n"+JSON.stringify(U.mine,null,1);
+  try{await navigator.clipboard.writeText(txt);toast("Kopyalandı, Claude'a yapıştır")}
+  catch(e){const t=document.createElement("textarea");t.value=txt;document.body.appendChild(t);t.select();try{document.execCommand("copy");toast("Kopyalandı")}catch(_){toast("Kopyalanamadı")}t.remove()}
+};
+renderLib();
+document.querySelector('#tabs button[data-t=add]').click();
+document.getElementById("tabs").style.display="none";
+</script>
+</body>
+</html>
