@@ -119,6 +119,8 @@ select{width:100%;background:var(--card);color:var(--txt);border:1px solid var(-
 .cen{text-align:center;color:var(--mut)}
 .list{margin-top:16px}
 .li{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:8px}
+.lvinfo{color:var(--mut);font-size:13px;margin-top:8px}
+.chip .lv{display:inline-block;font-size:11px;font-weight:700;margin-left:4px;opacity:.75}
 .li b{display:block;font-size:15px;margin-bottom:4px}
 .li span{color:var(--mut);font-size:14px}
 .li button{float:right;background:none;border:0;color:var(--acc);font-size:20px;cursor:pointer}
@@ -149,12 +151,8 @@ select{width:100%;background:var(--card);color:var(--txt);border:1px solid var(-
   </div>
 
   <div class="lbl">Seviye</div>
-  <div class="toggle" id="levels">
-    <button data-l="0" class="on">Hepsi</button>
-    <button data-l="1">Kısa</button>
-    <button data-l="2">Orta</button>
-    <button data-l="3">Uzun</button>
-  </div>
+  <div class="chips" id="levels"></div>
+  <div class="lvinfo" id="lvInfo"></div>
 
   <div class="lbl">Seslendirme</div>
   <select id="voiceSel"></select>
@@ -193,7 +191,7 @@ select{width:100%;background:var(--card);color:var(--txt);border:1px solid var(-
 </div>
 <script src="config.js?v=9"></script>
 <script src="auth.js?v=9"></script>
-<script src="notes.js?v=9"></script>
+<script src="notes.js?v=10"></script>
 <script>
 const CATS={sohbet:"Sohbet & akıcılık",komedi:"Komedi",gunluk:"Günlük hayat",ulasim:"Metro & ulaşım",market:"Market & kafe",santiye:"Şantiye",evrak:"Evrak & ofis",toplanti:"Toplantı"};
 const D=[
@@ -298,8 +296,59 @@ const D=[
 ["sohbet", "Я бы с удовольствием, но сегодня не могу.", "Seve seve gelirdim ama bugün olmaz.", "Hiç gelmem, bugün de olmaz.", "🙏📅"],
 ["sohbet", "Подожди секунду, я перезвоню.", "Bir saniye bekle, seni geri arayacağım.", "Bir saniye bekle, sesin gelmiyor.", "📱⏱️"],
 ["sohbet", "Что нового? Рассказывай!", "Ne var ne yok? Anlat bakalım!", "Yeni bir şey yok, anlatacak bir şey yok.", "🗣️✨"],
-["sohbet", "Ну, как тебе Москва? Нравится?", "Eee, Moskova nasıl? Beğendin mi?", "Eee, Moskova'dan ne zaman dönüyorsun?", "🏙️😍"]
-].map((r,i)=>{const w=r[1].split(/\s+/).length;return{id:i,cat:r[0],ru:r[1],tr:r[2],wr:r[3],em:r[4],lvl:w<=3?1:w<=6?2:3,fem:i%2===0}});
+["sohbet", "Ну, как тебе Москва? Нравится?", "Eee, Moskova nasıl? Beğendin mi?", "Eee, Moskova'dan ne zaman dönüyorsun?", "🏙️😍"],
+// --- 2.2: seviyeli yeni sahneler (6. alan = CEFR seviyesi) ---
+["gunluk", "Меня зовут Анна. А вас?", "Benim adım Anna. Ya sizin?", "Onun adı Anna. Ya sizin?", "👋🙂", "A1"],
+["market", "Мне чёрный чай, пожалуйста.", "Bana siyah çay, lütfen.", "Bana yeşil çay, lütfen.", "🍵🙏", "A1"],
+["ulasim", "Где здесь метро?", "Buralarda metro nerede?", "Metro ne zaman açılıyor?", "🚇❓", "A1"],
+["gunluk", "Я забыл ключи дома.", "Anahtarları evde unuttum.", "Anahtarları işte unuttum.", "🔑🏠", "A2"],
+["market", "Можно меню на английском?", "İngilizce menü alabilir miyim?", "Rusça menü alabilir miyim?", "📖🌍", "A2"],
+["ulasim", "Автобус ходит каждые пятнадцать минут.", "Otobüs her on beş dakikada bir geliyor.", "Otobüs on beş dakika gecikiyor.", "🚌⏱️", "A2"],
+["santiye", "Принесите, пожалуйста, рулетку.", "Lütfen şerit metreyi getirin.", "Lütfen su terazisini getirin.", "📏🙏", "A2"],
+["toplanti", "Совещание начнётся в девять.", "Toplantı dokuzda başlayacak.", "Toplantı dokuzda bitecek.", "🕘👥", "A2"],
+["sohbet", "Хочешь, я тебе помогу?", "İstersen sana yardım edeyim mi?", "Bana yardım eder misin?", "🤝🙂", "A2"],
+["komedi", "Я на диете: ем только по выходным и по будням.", "Diyetteyim: sadece hafta sonları ve hafta içi yiyorum.", "Diyetteyim: sadece hafta sonları yiyorum.", "🥗😅", "A2"],
+["gunluk", "Если завтра будет дождь, мы останемся дома.", "Yarın yağmur yağarsa evde kalacağız.", "Yarın yağmur yağsa da dışarı çıkacağız.", "🌧️🏠", "B1"],
+["gunluk", "Мне нужно продлить регистрацию до конца месяца.", "Kaydımı ay sonuna kadar uzatmam gerekiyor.", "Kaydımı ay başında iptal etmem gerekiyor.", "📄📅", "B1"],
+["gunluk", "Соседи сверху опять делают ремонт.", "Üst kattaki komşular yine tadilat yapıyor.", "Alt kattaki komşular yine parti veriyor.", "🔨😩", "B1"],
+["ulasim", "Из-за ремонта станция закрыта на вход.", "Tadilat nedeniyle istasyonun girişi kapalı.", "Tadilat nedeniyle istasyonun çıkışı kapalı.", "🚇🚧", "B1"],
+["ulasim", "Я проехал свою остановку, потому что заснул.", "Uyuyakaldığım için durağımı kaçırdım.", "Uyuyakaldım ama durağımda indim.", "😴🚌", "B1"],
+["market", "Я хотел бы вернуть эту куртку, она мне мала.", "Bu montu iade etmek istiyorum, bana küçük geldi.", "Bu montu değiştirmek istiyorum, bana büyük geldi.", "🧥↩️", "B1"],
+["market", "Извините, но в счёте ошибка: мы это не заказывали.", "Affedersiniz ama hesapta hata var: bunu sipariş etmedik.", "Affedersiniz ama hesap doğru: bunu biz sipariş ettik.", "🧾❌", "B1"],
+["santiye", "Перед заливкой нужно убрать мусор из опалубки.", "Dökümden önce kalıbın içindeki çöp temizlenmeli.", "Dökümden sonra kalıp sökülmeli.", "🧹🪵", "B1"],
+["santiye", "Поставщик обещал привезти блоки до обеда.", "Tedarikçi blokları öğleden önce getireceğine söz verdi.", "Tedarikçi blokları öğleden sonra getirdi.", "🧱🚛", "B1"],
+["santiye", "После дождя на третьем этаже течёт с потолка.", "Yağmurdan sonra üçüncü katta tavandan su akıyor.", "Yağmurdan sonra üçüncü kattaki zemin kurudu.", "💧🏢", "B1"],
+["evrak", "Пришлите, пожалуйста, исправленную версию до четверга.", "Lütfen düzeltilmiş versiyonu perşembeye kadar gönderin.", "Lütfen ilk versiyonu perşembe günü gönderin.", "📄🗓️", "B1"],
+["evrak", "Я не могу подписать акт, пока не увижу фото.", "Fotoğrafları görmeden tutanağı imzalayamam.", "Fotoğrafları gördükten sonra tutanağı imzaladım.", "📸✍️", "B1"],
+["evrak", "Счёт оплатят в течение десяти рабочих дней.", "Fatura on iş günü içinde ödenecek.", "Fatura on iş günü önce ödendi.", "💸📅", "B1"],
+["toplanti", "Давайте сначала обсудим самые срочные вопросы.", "Önce en acil konuları konuşalım.", "En acil konuları sona bırakalım.", "⚡🗂️", "B1"],
+["toplanti", "Я не согласен, но давайте попробуем ваш вариант.", "Katılmıyorum ama sizin seçeneğinizi deneyelim.", "Katılıyorum, o yüzden kendi seçeneğimizle devam edelim.", "🤔🤝", "B1"],
+["toplanti", "Кто может взять эту задачу на себя?", "Bu görevi kim üstlenebilir?", "Bu görevi kim verdi?", "🙋📋", "B1"],
+["sohbet", "Я думал, что ты уже уехал в отпуск.", "Senin çoktan tatile gittiğini sanıyordum.", "Senin tatilden döndüğünü biliyordum.", "🏖️🤔", "B1"],
+["sohbet", "Если честно, мне этот фильм не очень понравился.", "Açıkçası bu filmi pek beğenmedim.", "Açıkçası bu filme bayıldım.", "🎬😕", "B1"],
+["sohbet", "Не знаю, как ты, а я бы чего-нибудь поел.", "Seni bilmem ama ben bir şeyler yerdim.", "Seni bilmem ama ben hiç aç değilim.", "🍕🙂", "B1"],
+["komedi", "Я начал бегать по утрам. Ну, точнее, думать об этом.", "Sabahları koşmaya başladım. Yani, daha doğrusu bunu düşünmeye.", "Sabahları koşmayı bıraktım. Artık sadece yürüyorum.", "🏃💭", "B1"],
+["gunluk", "Управляющая компания обещала починить лифт, но воз и ныне там.", "Yönetim şirketi asansörü tamir etmeye söz verdi ama hâlâ kılını kıpırdatan yok.", "Yönetim şirketi asansörü söz verdiği gibi hemen tamir etti.", "🛗😤", "B2"],
+["gunluk", "Чем раньше подашь документы, тем быстрее получишь ответ.", "Belgeleri ne kadar erken verirsen o kadar çabuk cevap alırsın.", "Belgeleri ne kadar geç verirsen o kadar iyi olur.", "📨⏩", "B2"],
+["ulasim", "Если бы я поехал на метро, давно был бы на месте.", "Metroyla gitseydim çoktan varmış olurdum.", "Metroyla gittiğim için çoktan vardım.", "🚇⌛", "B2"],
+["market", "Курьер перепутал заказ, и мне привезли чужие продукты.", "Kurye siparişi karıştırmış, bana başkasının ürünlerini getirdiler.", "Kurye siparişimi erken getirdi, hepsi eksiksizdi.", "🛵📦", "B2"],
+["santiye", "Пока не сдадим исполнительную схему, технадзор не даст добро на следующий этап.", "Uygulama (as-built) şemasını teslim etmeden teknik kontrol bir sonraki aşamaya onay vermez.", "Teknik kontrol, as-built şemayı beklemeden bir sonraki aşamaya onay verdi.", "📐🛑", "B2"],
+["santiye", "Субподрядчик снял людей с объекта, не предупредив нас.", "Taşeron bize haber vermeden adamlarını şantiyeden çekti.", "Taşeron bize haber vererek şantiyeye ek adam gönderdi.", "👷🚪", "B2"],
+["santiye", "Бетон набрал прочность быстрее, чем мы ожидали.", "Beton beklediğimizden daha hızlı dayanım kazandı.", "Beton beklediğimizden daha yavaş dayanım kazandı.", "🧪💪", "B2"],
+["evrak", "Согласно договору, подрядчик несёт ответственность за качество работ.", "Sözleşmeye göre işlerin kalitesinden yüklenici sorumludur.", "Sözleşmeye göre işlerin kalitesinden işveren sorumludur.", "📜⚖️", "B2"],
+["evrak", "Акт вернули на доработку с замечаниями юриста.", "Tutanak, hukukçunun notlarıyla düzeltilmek üzere geri gönderildi.", "Tutanak hukukçu tarafından notsuz onaylandı.", "📋🔁", "B2"],
+["toplanti", "Если мы не ускоримся, сорвём сроки сдачи корпуса.", "Hızlanmazsak bloğun teslim tarihini kaçıracağız.", "Hızlanırsak bloğu teslim tarihinden önce bitireceğiz.", "⏳🏢", "B2"],
+["toplanti", "Предлагаю перенести этот вопрос на следующее совещание.", "Bu konuyu bir sonraki toplantıya ertelemeyi öneriyorum.", "Bu konuyu bu toplantıda kapatmayı öneriyorum.", "📅➡️", "B2"],
+["toplanti", "Давайте зафиксируем это в протоколе, чтобы потом не было вопросов.", "Sonra soru işareti kalmasın diye bunu tutanağa geçirelim.", "Bunu tutanağa yazmayalım, sonra konuşuruz.", "📝✅", "B2"],
+["sohbet", "Мне неловко тебя просить, но не мог бы ты одолжить мне машину?", "Senden istemeye çekiniyorum ama arabanı bana ödünç verebilir misin?", "Senden istemeye çekiniyorum ama arabamı sana ödünç verebilir miyim?", "🚗🙏", "B2"],
+["sohbet", "Как говорится, лучше поздно, чем никогда.", "Derler ya, geç olsun güç olmasın.", "Derler ya, sakla samanı gelir zamanı.", "⏰🙂", "B2"],
+["komedi", "Начальник попросил «быстро глянуть» документ на сорок страниц.", "Patron kırk sayfalık bir belgeye \"hızlıca bir göz atmamı\" istedi.", "Patron kırk sayfalık belgeyi hızlıca kendisi okudu.", "📚😵", "B2"],
+["toplanti", "Не будем ходить вокруг да около: проект отстаёт на месяц.", "Lafı dolandırmayalım: proje bir ay geride.", "Acele etmeyelim: projede bir aylık payımız var.", "🎯📉", "C1"],
+["evrak", "Подрядчик ссылается на форс-мажор, но доказательной базы у него нет.", "Yüklenici mücbir sebebe dayanıyor ama elinde kanıt yok.", "Yüklenici mücbir sebebi kanıtlarıyla belgeledi.", "⚖️🔍", "C1"],
+["sohbet", "Он мастер своего дела, но со сроками у него вечная беда.", "İşinin ustası ama süreler konusunda hep sorun yaşıyor.", "İşinde acemi ama süreleri hep tutturuyor.", "🛠️⏰", "C1"],
+["komedi", "Обещанного три года ждут — это прямо про наш ремонт.", "Vaat edileni üç yıl beklerler — tam bizim tadilatı anlatıyor.", "Söz verilen iş üç günde bitti — tam bizim tadilat.", "🔨⏳", "C1"],
+["santiye", "Работы идут с опережением графика, что, честно говоря, большая редкость.", "İşler programın önünde gidiyor ki, açıkçası bu çok nadir görülür.", "İşler programın gerisinde ki, açıkçası bu çok sık görülür.", "📈😮", "C1"],
+].map((r,i)=>{const w=r[1].split(/\s+/).length;let l=r[5];if(!l){l=w<=4?"A1":w<=7?"A2":"B1";if(l==="A2"&&(r[0]==="evrak"||r[0]==="komedi"))l="B1"}return{id:i,cat:r[0],ru:r[1],tr:r[2],wr:r[3],em:r[4],lvl:l,fem:i%2===0}});
 
 function splitEmoji(s){try{return [...new Intl.Segmenter().segment(s)].map(x=>x.segment)}catch(e){return Array.from(s)}}
 
@@ -401,7 +450,7 @@ function buildScreen(q){
   let words="",pos=0;
   q.ru.split(/(\s+)/).forEach(t=>{if(/^\s+$/.test(t)){words+=t;pos+=t.length;return}words+=`<span class="w" data-s="${pos}">${t}</span>`;pos+=t.length});
   return `<svg class="bg" viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice">${SCENES[q.cat]()}</svg>
-  <div class="cat">${CATS[q.cat]}</div><div class="props">${props}</div>${speaker(q.fem,q.cat)}
+  <div class="cat">${CATS[q.cat]} · ${q.lvl}</div><div class="props">${props}</div>${speaker(q.fem,q.cat)}
   <div class="subt ${mode==="listen"?"hide":""}" id="subt"><div>${words}</div></div>`;
 }
 
@@ -463,7 +512,10 @@ function speak(q,mult){
 }
 
 /* ---------- AYARLAR ---------- */
-let cat="all",mode="listen",lvl=0;
+let cat="all",mode="listen",lvl="me";
+const LVS=["A1","A2","B1","B2","C1"],LIDX=k=>LVS.indexOf(k);
+// kullanıcının seviyesi: video modundaki seviye (yoksa B1)
+function myLevel(){try{const u=JSON.parse(localStorage.getItem("ruscaEkranYT_v1")||"{}");if(LVS.includes(u.level))return u.level}catch(e){}return S.level&&LVS.includes(S.level)?S.level:"B1"}
 const catsEl=document.getElementById("cats");
 [["all","Hepsi"],...Object.entries(CATS)].forEach(([k,v])=>{
   const b=document.createElement("button");b.className="chip"+(k==="all"?" on":"");b.textContent=v;
@@ -471,27 +523,47 @@ const catsEl=document.getElementById("cats");
   catsEl.appendChild(b);
 });
 function tog(id,attr,set){const el=document.getElementById(id);el.querySelectorAll("button").forEach(b=>b.onclick=()=>{el.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");set(b.dataset[attr])})}
-tog("modes","m",v=>mode=v);tog("levels","l",v=>lvl=+v);
+tog("modes","m",v=>mode=v);
+function renderLevels(){
+  const el=$("levels"),me=myLevel();
+  const opts=[["me",`⭐ Seviyem <span class="lv">${me}</span>`],...LVS.map(k=>[k,k]),["all","Hepsi"]];
+  el.innerHTML=opts.map(([k,t])=>`<button class="chip${k===lvl?" on":""}" data-l="${k}">${t}</button>`).join("");
+  el.querySelectorAll("button").forEach(b=>b.onclick=()=>{lvl=b.dataset.l;renderLevels()});
+  const target=lvl==="me"?me:lvl,seen=S.seen||{};
+  if(lvl==="all"){$("lvInfo").textContent=`${D.length} sahne · ${D.filter(d=>!seen[d.id]).length} tanesini henüz görmedin`;return}
+  const n=D.filter(d=>d.lvl===target),u=n.filter(d=>!seen[d.id]).length;
+  $("lvInfo").textContent=lvl==="me"?`${target} ağırlıklı karışık tur · ${target} seviyesinde ${n.length} sahne, ${u} tanesini görmedin`:`${target}: ${n.length} sahne · ${u} tanesini henüz görmedin`;
+}
 
 function renderStats(){
   $("sScore").textContent=S.score;
   $("sAcc").textContent=S.total?Math.round(S.right/S.total*100)+"%":"–";
   $("sWeak").textContent=S.weak.length;
   $("startWeak").disabled=!S.weak.length;
+  if($("levels").children.length)renderLevels();
 }
 const $=id=>document.getElementById(id);
-renderStats();
+renderStats();renderLevels();
+// seviye sunucuda kayıtlıysa al (video modunda seçilen/sınavla belirlenen)
+document.addEventListener("DOMContentLoaded",()=>{if(window.Auth&&Auth.token())Auth.call("profile",{token:Auth.token()}).then(r=>{if(r&&r.ok&&LVS.includes(r.level)){S.level=r.level;save();renderLevels()}})});
 
 /* ---------- OYUN ---------- */
 let Q=[],qi=0,pts=0,log=[],timer=null,tLeft=0,answered=false;
-const TIME=15;
+let TIME=15;
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function show(id){["home","play","result"].forEach(s=>$(s).classList.toggle("hide",s!==id));window.scrollTo(0,0)}
 function startRound(weakOnly){
-  let pool=weakOnly?D.filter(d=>S.weak.includes(d.id)):D.filter(d=>(cat==="all"||d.cat===cat)&&(!lvl||d.lvl===lvl));
-  if(!pool.length)pool=D.filter(d=>cat==="all"||d.cat===cat);
-  const wf=shuffle(pool.filter(d=>S.weak.includes(d.id))),rest=shuffle(pool.filter(d=>!S.weak.includes(d.id)));
-  Q=(weakOnly?wf:shuffle([...wf.slice(0,3),...rest])).slice(0,10);
+  const seen=S.seen||{},me=myLevel();
+  if(weakOnly){Q=shuffle(D.filter(d=>S.weak.includes(d.id))).slice(0,10)}
+  else{
+    let pool=D.filter(d=>(cat==="all"||d.cat===cat)&&(lvl==="all"||lvl==="me"||d.lvl===lvl));
+    if(pool.length<4)pool=D.filter(d=>cat==="all"||d.cat===cat);
+    // "Seviyem": kendi seviyen önce, sonra bir alt, sonra bir üst seviye
+    const dist=d=>{if(lvl!=="me")return 0;const x=LIDX(d.lvl)-LIDX(me);return x===0?0:x===-1?1:x===1?2:6};
+    const wf=shuffle(pool.filter(d=>S.weak.includes(d.id))).slice(0,3);
+    const rest=pool.filter(d=>!wf.includes(d)).map(d=>({d,k:(seen[d.id]||0)*4+dist(d)+Math.random()*1.5})).sort((a,b)=>a.k-b.k).map(x=>x.d);
+    Q=shuffle([...wf,...rest.slice(0,10-wf.length)]);
+  }
   qi=0;pts=0;log=[];show("play");ask();
 }
 function ask(){
@@ -507,7 +579,7 @@ function ask(){
   });
   // sahne girişi bitince konuş
   setTimeout(()=>{if(Q[qi]===q)speak(q)},q.cat==="ulasim"?900:350);
-  tLeft=TIME+1;$("timeBar").style.width="100%";clearInterval(timer);
+  TIME=Math.min(24,Math.max(15,8+q.ru.length*0.16));tLeft=TIME+1;$("timeBar").style.width="100%";clearInterval(timer);
   timer=setInterval(()=>{tLeft-=0.1;$("timeBar").style.width=Math.max(0,Math.min(1,tLeft/TIME)*100)+"%";if(tLeft<=0)answer(false,null,true)},100);
 }
 function answer(ok,btn,timeout){
@@ -515,7 +587,7 @@ function answer(ok,btn,timeout){
   const q=Q[qi];
   document.querySelectorAll(".opt").forEach(b=>{if(b.dataset.ok==="true")b.classList.add("ok");else if(b===btn)b.classList.add("bad")});
   const st=$("subt");if(st)st.classList.remove("hide");
-  S.total++;
+  S.total++;S.seen=S.seen||{};S.seen[q.id]=(S.seen[q.id]||0)+1;
   if(ok){const p=10+Math.round(Math.max(0,Math.min(TIME,tLeft)));pts+=p;S.score+=p;S.right++;S.weak=S.weak.filter(x=>x!==q.id);$("fb").innerHTML='<span style="color:var(--ok)">✓ Doğru · +'+p+'</span>'}
   else{if(!S.weak.includes(q.id))S.weak.push(q.id);$("fb").innerHTML='<span style="color:var(--bad)">'+(timeout?"⏱ Süre doldu":"✗ Yanlış")+'</span>'}
   log.push({q,ok});save();

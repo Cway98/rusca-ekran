@@ -2,6 +2,14 @@
 // Yeni sürüm çıkınca en üste bir kayıt ekle; duyuru o tarihten itibaren 3 gün gösterilir.
 window.RE_RELEASES = [
   {
+    v: "2.2", date: "2026-11-21", title: "Cümle oyununda seviyeler",
+    items: [
+      ["🎚", "A1–C1 seviyeleri", "Cümle oyunu artık video moduyla aynı seviyeleri kullanıyor. “⭐ Seviyem” seçiliyken önce kendi seviyen, sonra bir alt ve bir üst seviye gelir; istersen tek bir seviye de seçebilirsin."],
+      ["🆕", "50 yeni sahne", "Çoğu B1–B2 olmak üzere 50 yeni cümle: şantiye, evrak, toplantı, günlük hayat, sohbet ve deyimler. Toplam 152 cümle."],
+      ["⏱", "Uzun cümleye uzun süre", "Süre artık cümlenin uzunluğuna göre 15–24 saniye arasında ayarlanıyor; görmediğin cümleler önce geliyor."],
+    ],
+  },
+  {
     v: "2.1", date: "2026-11-21", title: "Görüş & öneri, zorunlu üyelik",
     items: [
       ["💬", "Görüş & öneri", "Ana ekrandan, Durumum sayfasından veya profil menünden bize yaz: öneri, eksik içerik, hata ya da genel yorum. Her mesajı okuyup sonraki sürümleri buna göre planlıyoruz."],
