@@ -41,6 +41,7 @@ body{background:var(--bg);color:var(--txt);font-family:Inter,system-ui,sans-seri
 <body>
 <div class="app">
   <div class="bar"><a class="icon-btn" href="youtube.html">‹</a><div class="logo">Rusça<b>Ekran</b></div><span data-auth-chip></span></div>
+  <div data-release-banner></div>
   <div class="hero">
     <h2>🏆 Lig tablosu</h2>
     <p id="sub">Haftalık lig her pazartesi (Moskova saati) sıfırlanır. Ligin, o hafta topladığın puana göre belirlenir.</p>
@@ -54,6 +55,7 @@ body{background:var(--bg);color:var(--txt);font-family:Inter,system-ui,sans-seri
 </div>
 <script src="config.js?v=8"></script>
 <script src="auth.js?v=8"></script>
+<script src="notes.js?v=8"></script>
 <script>
 const $=id=>document.getElementById(id);
 const esc=t=>String(t??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));

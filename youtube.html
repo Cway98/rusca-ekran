@@ -144,6 +144,7 @@ button{font-family:inherit;cursor:pointer;border:0;color:inherit;background:none
 
   <!-- ===== BAŞLANGIÇ ===== -->
   <section class="home" id="home">
+    <div data-release-banner></div>
     <div class="hero"><div class="glow"></div>
       <h2>Gerçek Rusça,<br>gerçek sahneler.</h2>
       <p>Sahne oynar, durur. Ne dendiğini anla, doğru çeviriyi seç. Ne kadar hızlı, o kadar çok puan.</p>
@@ -162,7 +163,7 @@ button{font-family:inherit;cursor:pointer;border:0;color:inherit;background:none
     <div style="flex:1"></div>
     <button class="cta" id="start" style="margin-top:0;margin-bottom:12px">▶ Başla</button>
     <a href="durum.html" id="leagueCard" style="display:flex;align-items:center;justify-content:space-between;text-decoration:none;color:var(--txt);background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:12px"><span><b style="font-size:15px">📊 Durumum & 🏆 Lig</b><br><small style="color:var(--mut)" id="leagueTxt">Haftalık hedefler, rozetler, sıralama</small></span><span style="color:var(--mut)">›</span></a>
-    <div class="sub-links"><a href="add.html">➕ Kendi sahneni ekle</a><a href="./">Cümle oyunu ›</a></div>
+    <div class="sub-links"><a href="add.html">➕ Kendi sahneni ekle</a><a href="#" onclick="ReleaseNotes.open();return false">📝 Yenilikler</a><a href="./">Cümle oyunu ›</a></div>
   </section>
 
   <!-- ===== OYUN ===== -->
@@ -214,6 +215,7 @@ button{font-family:inherit;cursor:pointer;border:0;color:inherit;background:none
 <script src="config.js?v=8"></script>
 <script src="auth.js?v=8"></script>
 <script src="clips.js?v=8"></script>
+<script src="notes.js?v=8"></script>
 <script>
 const $=id=>document.getElementById(id);
 const esc=t=>String(t??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
