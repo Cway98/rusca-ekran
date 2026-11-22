@@ -153,6 +153,7 @@ select{width:100%;background:var(--card);color:var(--txt);border:1px solid var(-
   <div class="lbl">Seviye</div>
   <div class="chips" id="levels"></div>
   <div class="lvinfo" id="lvInfo"></div>
+  <div data-level-coach style="margin-top:12px"></div>
 
   <div class="lbl">Seslendirme</div>
   <select id="voiceSel"></select>
@@ -183,6 +184,7 @@ select{width:100%;background:var(--card);color:var(--txt);border:1px solid var(-
 <div id="result" class="hide">
   <div class="big" id="rScore">0/10</div>
   <div class="cen" id="rTxt"></div>
+  <div data-level-coach style="margin-top:14px"></div>
   <div class="list" id="rList"></div>
   <button class="btn main" id="restart">Yeni tur</button>
   <button class="btn sec" id="home2">Ana ekran</button>
@@ -190,8 +192,9 @@ select{width:100%;background:var(--card);color:var(--txt);border:1px solid var(-
 
 </div>
 <script src="config.js?v=9"></script>
-<script src="auth.js?v=9"></script>
-<script src="notes.js?v=10"></script>
+<script src="auth.js?v=10"></script>
+<script src="notes.js?v=11"></script>
+<script src="levelcoach.js?v=1"></script>
 <script>
 const CATS={sohbet:"Sohbet & akıcılık",komedi:"Komedi",gunluk:"Günlük hayat",ulasim:"Metro & ulaşım",market:"Market & kafe",santiye:"Şantiye",evrak:"Evrak & ofis",toplanti:"Toplantı"};
 const D=[
@@ -544,6 +547,7 @@ function renderStats(){
 }
 const $=id=>document.getElementById(id);
 renderStats();renderLevels();
+document.addEventListener("level-change",e=>{S.level=e.detail;save();lvl="me";renderLevels()});
 // seviye sunucuda kayıtlıysa al (video modunda seçilen/sınavla belirlenen)
 document.addEventListener("DOMContentLoaded",()=>{if(window.Auth&&Auth.token())Auth.call("profile",{token:Auth.token()}).then(r=>{if(r&&r.ok&&LVS.includes(r.level)){S.level=r.level;save();renderLevels()}})});
 
@@ -587,7 +591,7 @@ function answer(ok,btn,timeout){
   const q=Q[qi];
   document.querySelectorAll(".opt").forEach(b=>{if(b.dataset.ok==="true")b.classList.add("ok");else if(b===btn)b.classList.add("bad")});
   const st=$("subt");if(st)st.classList.remove("hide");
-  S.total++;S.seen=S.seen||{};S.seen[q.id]=(S.seen[q.id]||0)+1;
+  S.total++;S.seen=S.seen||{};S.seen[q.id]=(S.seen[q.id]||0)+1;if(window.LevelCoach)LevelCoach.record(q.lvl,ok);
   if(ok){const p=10+Math.round(Math.max(0,Math.min(TIME,tLeft)));pts+=p;S.score+=p;S.right++;S.weak=S.weak.filter(x=>x!==q.id);$("fb").innerHTML='<span style="color:var(--ok)">✓ Doğru · +'+p+'</span>'}
   else{if(!S.weak.includes(q.id))S.weak.push(q.id);$("fb").innerHTML='<span style="color:var(--bad)">'+(timeout?"⏱ Süre doldu":"✗ Yanlış")+'</span>'}
   log.push({q,ok});save();
@@ -608,6 +612,7 @@ function finish(){
     d.innerHTML='<button aria-label="dinle">🔊</button><b>'+(l.ok?"✓ ":"✗ ")+l.q.ru+'</b><span>'+l.q.tr+'</span>';
     d.querySelector("button").onclick=()=>speak(l.q);$("rList").appendChild(d)});
   if(window.Auth&&Auth.user())Auth.submit({points:pts,right:r,total:log.length,best:0});
+  if(window.LevelCoach)LevelCoach.mount();
   renderStats();show("result");
 }
 $("start").onclick=()=>{try{speechSynthesis.speak(new SpeechSynthesisUtterance(""))}catch(e){}startRound(false)};

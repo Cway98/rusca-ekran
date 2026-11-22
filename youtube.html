@@ -157,6 +157,7 @@ button{font-family:inherit;cursor:pointer;border:0;color:inherit;background:none
       <div class="stat"><b id="sCount">0</b><small>Sahne</small></div>
     </div>
     <div class="lvcard" id="lvCard"><div class="lvbadge" id="lvBadge">?</div><div class="t"><b id="lvTitle">Seviyeni seç</b><small id="lvSub">Sana uygun sahneler gelsin</small></div><button id="lvChange">Değiştir</button></div>
+    <div data-level-coach style="margin-top:10px"></div>
     <div class="sec">Kategori</div>
     <div class="chips" id="cats"></div>
     <div class="sec">Tur uzunluğu</div>
@@ -196,6 +197,7 @@ button{font-family:inherit;cursor:pointer;border:0;color:inherit;background:none
     <div class="ring"><svg width="150" height="150"><circle cx="75" cy="75" r="64" stroke="#262b38" stroke-width="12" fill="none"/><circle id="ringC" cx="75" cy="75" r="64" stroke="url(#gr)" stroke-width="12" fill="none" stroke-linecap="round" stroke-dasharray="402" stroke-dashoffset="402" style="transition:stroke-dashoffset 1s ease-out"/><defs><linearGradient id="gr"><stop offset="0" stop-color="#ff4d3d"/><stop offset="1" stop-color="#ff7a45"/></linearGradient></defs></svg><b id="rPct">0%</b></div>
     <h3 id="rTitle">Tur bitti</h3>
     <div class="sub" id="rSub"></div>
+    <div data-level-coach></div>
     <div id="rRewards"></div>
     <div id="rAuth"></div>
     <div class="sec">Bu turdaki sahneler</div>
@@ -214,9 +216,10 @@ button{font-family:inherit;cursor:pointer;border:0;color:inherit;background:none
 </div></div>
 
 <script src="config.js?v=9"></script>
-<script src="auth.js?v=9"></script>
+<script src="auth.js?v=10"></script>
 <script src="clips.js?v=8"></script>
-<script src="notes.js?v=10"></script>
+<script src="notes.js?v=11"></script>
+<script src="levelcoach.js?v=1"></script>
 <script>
 const $=id=>document.getElementById(id);
 const esc=t=>String(t??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -367,7 +370,7 @@ function answer(ok,btn,timeout){
     if(log.length<10){const n=testPick();if(n)Q.push(n)}
     startAuto(ok?1800:3500);return;
   }
-  U.total++;
+  U.total++;if(window.LevelCoach)LevelCoach.record(clvl(c),ok);
   let gain=0;
   if(ok){streak++;U.right++;gain=10+Math.round(10*Math.max(0,1-el/total))+Math.min(10,(streak-1)*2);pts+=gain;U.score+=gain;U.weak=U.weak.filter(x=>x!==id);toastFloat("+"+gain,"var(--ok)");if(navigator.vibrate)navigator.vibrate(15)}
   else{streak=0;if(!U.weak.includes(id))U.weak.push(id);toastFloat(timeout?"⏱":"✗","var(--bad)");if(navigator.vibrate)navigator.vibrate([30,40,30])}
@@ -403,6 +406,7 @@ function finish(){
   $("rPct").textContent=pct+"%";$("ringC").style.strokeDashoffset=402;setTimeout(()=>$("ringC").style.strokeDashoffset=402*(1-pct/100),50);
   $("rTitle").textContent=pct===100?"Kusursuz! 🏆":pct>=80?"Harika iş! 🔥":pct>=50?"İyi gidiyorsun 👍":"Pratik zamanı 💪";
   $("rSub").textContent=`${r}/${log.length} doğru · ${pts} puan`+(log.length-r?` · ${log.length-r} sahne tekrar listesine eklendi`:"");
+  if(window.LevelCoach)LevelCoach.mount();
   $("rList").innerHTML=log.map(l=>`<div class="ri ${l.ok?"ok":"bad"}"><b>${esc(l.c.ru)}</b><span>${esc(l.c.tr)}</span></div>`).join("");
   const rA=$("rAuth");
   if(window.Auth&&Auth.user()){rA.innerHTML='<div class="sub" style="margin-top:-8px">☁️ Puanın lige gönderiliyor…</div>';
@@ -440,9 +444,10 @@ function openSheet(){
 }
 function closeSheet(){$("lvSheet").classList.add("hide")}
 async function setLevel(k,placement){
-  U.level=k;save();renderHome();
+  U.level=k;save();renderHome();if(window.LevelCoach){LevelCoach.noteManualChange();LevelCoach.mount()}
   if(window.Auth&&Auth.user()){const x=await Auth.call("setLevel",{token:Auth.token(),level:k,placement:!!placement});if(x&&x.newBadges&&x.newBadges.length)showRewards({ok:true,newBadges:x.newBadges})}
 }
+if(window.LevelCoach)LevelCoach.onChange=k=>setLevel(k,false);
 $("lvChange").onclick=openSheet;$("lvTest").onclick=startTest;$("lvClose").onclick=closeSheet;
 $("lvSheet").onclick=e=>{if(e.target.id==="lvSheet")closeSheet()};
 /* ---------- sunucudaki profil: seviye + daha önce görülen sahneler ---------- */

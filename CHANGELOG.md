@@ -1,5 +1,10 @@
 # Rusça Ekran – Güncelleme notları
 
+## 2.3 · Seviye koçu (22 Kasım 2026)
+- 📉 Kendi seviyendeki son 20 cevapta (en az 12) doğruluk %55'in altındaysa bir alt seviye önerisi
+- 📈 Son 20 cevapta %90+ doğruluk varsa bir üst seviye önerisi (üst seviyede denediysen orada en az %60 şartıyla)
+- Öneri tur sonu ve ana ekranda; "kalayım" denirse 20 cevap boyunca sormaz; video modu ve cümle oyunu ortak geçmiş
+
 ## 2.2 · Cümle oyununda seviyeler (21 Kasım 2026)
 - 🎚 Cümle oyununda A1–C1 seviyeleri; "⭐ Seviyem" kendi seviyeni öne alır (video modundaki/sınavdaki seviye kullanılır, yoksa B1)
 - 🆕 50 yeni cümle (A1 3, A2 7, B1 20, B2 15, C1 5); mevcut 102 cümleye seviye atandı. Toplam 152.

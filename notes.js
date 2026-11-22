@@ -2,6 +2,14 @@
 // Yeni sürüm çıkınca en üste bir kayıt ekle; duyuru o tarihten itibaren 3 gün gösterilir.
 window.RE_RELEASES = [
   {
+    v: "2.3", date: "2026-11-22", title: "Seviye koçu",
+    items: [
+      ["📉", "Zorlanırsan haber verir", "Kendi seviyendeki son 20 sahnede doğruluğun %55'in altına düşerse bir alt seviyeyi önerir. Örneğin C1'de çok hata yapıyorsan “B2'ye geç” der."],
+      ["📈", "Rahatsan bir üst seviye", "Son 20 sahnede %90 ve üzeri doğruysan bir üst seviyeye çıkmanı önerir."],
+      ["🤝", "Karar senin", "Öneri tur sonunda ve ana ekranda çıkar. “Kalayım” dersen 20 sahne boyunca tekrar sormaz. Video modu ve cümle oyunu aynı geçmişi kullanır."],
+    ],
+  },
+  {
     v: "2.2", date: "2026-11-21", title: "Cümle oyununda seviyeler",
     items: [
       ["🎚", "A1–C1 seviyeleri", "Cümle oyunu artık video moduyla aynı seviyeleri kullanıyor. “⭐ Seviyem” seçiliyken önce kendi seviyen, sonra bir alt ve bir üst seviye gelir; istersen tek bir seviye de seçebilirsin."],
