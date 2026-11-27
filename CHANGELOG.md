@@ -1,5 +1,9 @@
 # Rusça Ekran – Güncelleme notları
 
+## 2.4 · B2'de 150+ sahne (27 Kasım 2026)
+- 🎬 Кухня'dan 45 yeni B2 sahnesi (en fazla 11 sn); B2 toplam 152
+- 👥 Easy Russian'dan 38 sahne (dostluk, Moskova'da yaşam); 15 sn'yi aşan 5 sahne çıkarıldı
+
 ## 2.3 · Seviye koçu (22 Kasım 2026)
 - 📉 Kendi seviyendeki son 20 cevapta (en az 12) doğruluk %55'in altındaysa bir alt seviye önerisi
 - 📈 Son 20 cevapta %90+ doğruluk varsa bir üst seviye önerisi (üst seviyede denediysen orada en az %60 şartıyla)
