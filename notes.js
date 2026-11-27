@@ -2,9 +2,10 @@
 // Yeni sürüm çıkınca en üste bir kayıt ekle; duyuru o tarihten itibaren 3 gün gösterilir.
 window.RE_RELEASES = [
   {
-    v: "2.4", date: "2026-11-27", title: "B2'de 150+ sahne",
+    v: "2.4", date: "2026-11-27", title: "B2'de 150+, C1'de 100+ sahne",
     items: [
       ["🎬", "45 yeni Кухня sahnesi", "B2 seviyesi 152 sahneye çıktı. Yeni sahneler kısa: sadece cümlenin geçtiği bölüm, en fazla 11 saniye."],
+      ["🎓", "37 yeni C1 sahnesi", "Кухня'dan deyimli ve ağır cümleler: комар носа не подточит, по миру пойти, ни слуха ни духа… C1 toplam 101."],
       ["👥", "Easy Russian'dan 38 sahne", "Dostluk ve Moskova'da yaşam bölümlerinden B1–B2 sahneleri eklendi."],
     ],
   },

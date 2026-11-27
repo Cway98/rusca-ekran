@@ -1,6 +1,7 @@
 # Rusça Ekran – Güncelleme notları
 
-## 2.4 · B2'de 150+ sahne (27 Kasım 2026)
+## 2.4 · B2'de 150+, C1'de 100+ sahne (27 Kasım 2026)
+- 🎓 Кухня'dan 37 yeni C1 sahnesi (en fazla 13 sn); C1 toplam 101; B1 tekrar 100
 - 🎬 Кухня'dan 45 yeni B2 sahnesi (en fazla 11 sn); B2 toplam 152
 - 👥 Easy Russian'dan 38 sahne (dostluk, Moskova'da yaşam); 15 sn'yi aşan 5 sahne çıkarıldı
 
